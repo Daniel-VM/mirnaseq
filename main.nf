@@ -3,7 +3,8 @@
 ========================================================================================
     nf-core/mirnaseq
 ========================================================================================
-    Github : https://github.com/nf-core/mirnaseq
+    Github1 : https://github.com/Daniel-VM/mirnaseq
+    Github2 : https://github.com/nf-core/mirnaseq
     Website: https://nf-co.re/mirnaseq
     Slack  : https://nfcore.slack.com/channels/mirnaseq
 ----------------------------------------------------------------------------------------
@@ -25,7 +26,7 @@ params.fasta = WorkflowMain.getGenomeAttribute(params, 'fasta')
 ========================================================================================
 */
 
-WorkflowMain.initialise(workflow, params, log)
+// WorkflowMain.initialise(workflow, params, log) // COMMENT OUT THIS LINE AFTER UPDATING USAGE.MD file
 
 /*
 ========================================================================================
