@@ -3,10 +3,7 @@
 ========================================================================================
     nf-core/mirnaseq
 ========================================================================================
-    Github1 : https://github.com/Daniel-VM/mirnaseq
-    Github2 : https://github.com/nf-core/mirnaseq
-    Website: https://nf-co.re/mirnaseq
-    Slack  : https://nfcore.slack.com/channels/mirnaseq
+    Github : https://github.com/Daniel-VM/mirnaseq
 ----------------------------------------------------------------------------------------
 */
 
@@ -14,16 +11,10 @@ nextflow.enable.dsl = 2
 
 /*
 ========================================================================================
-    GENOME PARAMETER VALUES
-========================================================================================
-*/
-
-params.fasta = WorkflowMain.getGenomeAttribute(params, 'fasta')
-
-/*
-========================================================================================
     VALIDATE & PRINT PARAMETER SUMMARY
 ========================================================================================
+Before executing any process, this pipeline runs initial checks (see lib/) to verify
+the user's input consistency (file format, mandatory parameters etc...)
 */
 
 // WorkflowMain.initialise(workflow, params, log) // COMMENT OUT THIS LINE AFTER UPDATING USAGE.MD file
