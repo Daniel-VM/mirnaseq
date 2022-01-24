@@ -65,6 +65,8 @@ The nf-core/mirnaseq pipeline comes with documentation about the pipeline [usage
 nf-core/mirnaseq was originally written by Daniel-VM.
 
 We thank the following people for their extensive assistance in the development of this pipeline:
+1. Amanda Fernández-Rodríguez
+2. Óscar Brochado-Kith
 
 <!-- TODO nf-core: If applicable, make list of people who have also contributed -->
 
