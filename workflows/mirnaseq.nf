@@ -22,6 +22,7 @@ if (params.input) { raw_input = Channel.fromPath(params.input) } else { exit 1, 
 // MODULE: Installed directly from nf-core/modules
 //
 include { FASTQC                      } from '../modules/local/fastqc/main'
+include { TRIM_GALORE                      } from '../modules/local/trim_galore/main'
 
 /*
 ========================================================================================
@@ -46,6 +47,14 @@ workflow MIRNASEQ {
     FASTQC (
         raw_input
     )
+
+    //
+    // MODULE: Run TRIM GALORE
+    //
+    TRIM_GALORE (
+        raw_input
+    )
+
 }
 /*
 ========================================================================================
