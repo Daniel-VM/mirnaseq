@@ -10,6 +10,11 @@ if (params.input) { raw_input = Channel.fromPath(params.input) } else { exit 1, 
 ========================================================================================
     CONFIG FILES
 ========================================================================================
+*/
+//ch_multiqc_config = file("$projectDir/assets/multiqc_config.yaml", checkIfExists: true)
+//ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
+
+/*
 ========================================================================================
     IMPORT LOCAL MODULES/SUBWORKFLOWS
 ========================================================================================
@@ -23,6 +28,7 @@ if (params.input) { raw_input = Channel.fromPath(params.input) } else { exit 1, 
 //
 include { FASTQC                      } from '../modules/local/fastqc/main'
 include { TRIM_GALORE                      } from '../modules/local/trim_galore/main'
+include { MULTIQC                      } from '../modules/local/multiqc/main'
 
 /*
 ========================================================================================
@@ -54,6 +60,16 @@ workflow MIRNASEQ {
     TRIM_GALORE (
         raw_input
     )
+
+    //
+    // MODULE: Run MULTIQC
+    //
+
+    MULTIQC (
+        TRIM_GALORE.out.zip.collect()
+    )
+
+    
 
 }
 /*

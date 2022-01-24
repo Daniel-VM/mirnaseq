@@ -6,16 +6,23 @@ process TRIM_GALORE {
     file reads
 
     output:
-    path('*.gz'), emit: reads
-    path('*trimming_report.txt'), emit: trimgalore_results
-    path("*_fastqc.{zip,html}"), emit: trimgalore_fastqc_reports
+    path('*.gz'), emit: zipped_reads
+    path('*trimming_report.txt'), emit: reports
+    path("*_fastqc.zip"), emit: zip
+    path("*_fastqc.html"), emit: html
+    path "versions.yml"        , emit: versions
 
     script: 
     """
-    trim_galore --adapter ${params.three_prime_adapter} \
-                --length ${params.min_length} \
-                --max_length ${params.max_length} \
-                --quality ${params.quality_cutoff} \
+    trim_galore --adapter ${params.three_prime_adapter} \\
+                --length ${params.min_length} \\
+                --max_length ${params.max_length} \\
+                --quality ${params.quality_cutoff} \\
                 --gzip $reads --fastqc
+                
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        TrimGalore: \$( trim_galore --version | grep '[0-9].[0-9].[0-9]' | sed -e "s/version//g" | head -n1 )
+    END_VERSIONS
     """
 }

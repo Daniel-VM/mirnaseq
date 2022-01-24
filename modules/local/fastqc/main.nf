@@ -7,7 +7,9 @@ process FASTQC {
 
     output:
     //path("*_fastqc.{zip,html}"), emit: fastqc_results
-    path('*_fastqc.{zip,html}'), emit: fastqc_results
+    path("*.html")        , emit: html
+    path("*.zip")         , emit: zip
+    path("versions.yml")  , emit: versions
     
     script:
     def args = task.ext.args ?: ''
@@ -15,6 +17,11 @@ process FASTQC {
     
     """
     fastqc $args --threads $task.cpus ${prefix}.fastq.gz
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        fastqc: \$( fastqc --version | sed -e "s/FastQC v//g" )
+    END_VERSIONS
     """
 }
 
