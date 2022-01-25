@@ -11,27 +11,33 @@ if (params.input) { raw_input = Channel.fromPath(params.input) } else { exit 1, 
     CONFIG FILES
 ========================================================================================
 */
-// Stage config files
+// Stage multiqc files
+// Check if genome exists in the config file
+if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) { exit 1, "The provided genome '${params.genome}' is not available in the iGenomes file. Currently the available genomes are ${params.genomes.keySet().join(', ')}" }
 ch_multiqc_config = file("$projectDir/assets/multiqc_config.yaml", checkIfExists: true)
 ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
 
+// Stage reference files
+params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
+if ( !params.fasta )   { exit 1, "Reference genome Fasta file not found: ${params.fasta}" }
+if ( !params.mature )  { exit 1, "Mature miRNA fasta file not found: ${params.mature}" }
+if ( !params.hairpin ) { exit 1, "Hairpin miRNA fasta file not found: ${params.hairpin}" }
 
 /*
 ========================================================================================
     IMPORT LOCAL MODULES/SUBWORKFLOWS
 ========================================================================================
+*/
+include { PREPARE_REFERENCES        } from '../subworkflows/local/prepare_references'
+include { FASTQC                    } from '../modules/local/fastqc/main'
+include { TRIM_GALORE               } from '../modules/local/trim_galore/main'
+include { MULTIQC_ONRAW; MULTIQC    } from '../modules/local/multiqc/main'
+
+/*
 ========================================================================================
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
 ========================================================================================
 */
-
-//
-// MODULE: Installed directly from nf-core/modules
-//
-include { FASTQC                      } from '../modules/local/fastqc/main'
-include { TRIM_GALORE                      } from '../modules/local/trim_galore/main'
-include { MULTIQC_ONRAW; MULTIQC                      } from '../modules/local/multiqc/main'
-
 /*
 ========================================================================================
     RUN MAIN WORKFLOW
@@ -46,8 +52,17 @@ workflow MIRNASEQ {
     ch_versions = Channel.empty()
 
     //
-    // (FIX)SUBWORKFLOW: Read in samplesheet, validate and stage input files
+    // MODULE: PREPARE REFERENCE FILES (GENOME & MIRBASE)
     //
+    reference_genome = file(params.fasta, checkIfExists: true)
+    reference_mirbaseMature = file(params.mature, checkIfExists: true)
+    reference_mirbaseHairpin = file(params.hairpin, checkIfExists: true)
+
+    PREPARE_REFERENCES (
+        reference_genome,
+        reference_mirbaseMature,
+        reference_mirbaseHairpin
+    )
 
     //
     // MODULE: Run FastQC
@@ -55,6 +70,7 @@ workflow MIRNASEQ {
     FASTQC (
         raw_input
     )
+    
     MULTIQC_ONRAW (
         FASTQC.out.reports.collect()
     )
