@@ -30,7 +30,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 include { FASTQC                      } from '../modules/local/fastqc/main'
 include { TRIM_GALORE                      } from '../modules/local/trim_galore/main'
-include { MULTIQC                      } from '../modules/local/multiqc/main'
+include { MULTIQC_ONRAW; MULTIQC                      } from '../modules/local/multiqc/main'
 
 /*
 ========================================================================================
@@ -55,6 +55,9 @@ workflow MIRNASEQ {
     FASTQC (
         raw_input
     )
+    MULTIQC_ONRAW (
+        FASTQC.out.reports.collect()
+    )
 
     //
     // MODULE: Run TRIM GALORE
@@ -69,15 +72,12 @@ workflow MIRNASEQ {
     ch_multiqc_files = Channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
     ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.reports)
-    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.reports)
+    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_reports)
+    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.fastqc_reports)
 
     MULTIQC (
         ch_multiqc_files.collect()
     )
-
-    
-
 }
 /*
 ========================================================================================
