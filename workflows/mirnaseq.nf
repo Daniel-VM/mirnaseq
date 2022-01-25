@@ -11,8 +11,10 @@ if (params.input) { raw_input = Channel.fromPath(params.input) } else { exit 1, 
     CONFIG FILES
 ========================================================================================
 */
-//ch_multiqc_config = file("$projectDir/assets/multiqc_config.yaml", checkIfExists: true)
-//ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
+// Stage config files
+ch_multiqc_config = file("$projectDir/assets/multiqc_config.yaml", checkIfExists: true)
+ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
+
 
 /*
 ========================================================================================
@@ -64,9 +66,14 @@ workflow MIRNASEQ {
     //
     // MODULE: Run MULTIQC
     //
+    ch_multiqc_files = Channel.empty()
+    ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.reports)
+    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.reports)
 
     MULTIQC (
-        TRIM_GALORE.out.zip.collect()
+        ch_multiqc_files.collect()
     )
 
     

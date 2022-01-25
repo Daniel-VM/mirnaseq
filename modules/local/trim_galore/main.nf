@@ -6,11 +6,11 @@ process TRIM_GALORE {
     file reads
 
     output:
-    path('*.gz'), emit: zipped_reads
+    path('*.gz')                , emit: zipped_reads
     path('*trimming_report.txt'), emit: reports
-    path("*_fastqc.zip"), emit: zip
-    path("*_fastqc.html"), emit: html
-    path "versions.yml"        , emit: versions
+    path("*_fastqc.zip")        , emit: zip
+    path("*_fastqc.html")       , emit: html
+    path "versions.yml"         , emit: versions
 
     script: 
     """

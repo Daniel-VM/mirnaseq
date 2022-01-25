@@ -4,8 +4,6 @@ process MULTIQC {
 
     input:
     path multiqc_files
-//    file multiqc_config
-//    file multiqc_custom_config
 
     output:
     path "*multiqc_report.html", emit: report

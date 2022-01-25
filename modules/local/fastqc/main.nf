@@ -6,9 +6,7 @@ process FASTQC {
     file reads
 
     output:
-    //path("*_fastqc.{zip,html}"), emit: fastqc_results
-    path("*.html")        , emit: html
-    path("*.zip")         , emit: zip
+    path("*_fastqc.{zip,html}"), emit: reports
     path("versions.yml")  , emit: versions
     
     script:
