@@ -53,17 +53,11 @@ workflow MIRNASEQ {
 
     //
     // MODULE: PREPARE REFERENCE FILES (GENOME & MIRBASE)
-    //
-    reference_genome = file(params.fasta, checkIfExists: true)
-    reference_mirbaseMature = file(params.mature, checkIfExists: true)
-    reference_mirbaseHairpin = file(params.hairpin, checkIfExists: true)
-
+    // Fix: add config target sp and related 
     PREPARE_REFERENCES (
-        reference_genome,
-        reference_mirbaseMature,
-        reference_mirbaseHairpin
-    )
 
+    )
+/*
     //
     // MODULE: Run FastQC
     //
@@ -94,6 +88,7 @@ workflow MIRNASEQ {
     MULTIQC (
         ch_multiqc_files.collect()
     )
+    */
 }
 /*
 ========================================================================================
