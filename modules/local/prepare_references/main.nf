@@ -15,23 +15,39 @@ process PREPARE_GENOME {
     path ('*nowhite.fa'), emit: nowhite 
 }
 
-process PREPARE_MIRBASE {
+process PREPARE_MIRBASE_TARGET {
     label 'process_low'
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)
 
     input:
     file mature_fasta
     file hairpin_fasta
+    val(target_sp)
 
     script:
     """
-    extract_miRNAs.pl $mature_fasta hsa > mature_ref.fa
-    extract_miRNAs.pl $hairpin_fasta hsa > hairpin_ref.fa
-    extract_miRNAs.pl $mature_fasta ggo,ppy,ptr,ppa > mature_related_ref.fa
+    extract_miRNAs.pl $mature_fasta $target_sp > mature_ref.fa
+    extract_miRNAs.pl $hairpin_fasta $target_sp > hairpin_ref.fa
     """
 
     output:
     path ('mature_ref.fa')      , emit: mature
     path ('hairpin_ref.fa')     , emit: hairpin
+}
+
+process PREPARE_MIRBASE_RELATED {
+    label 'process_low'
+    conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)
+
+    input:
+    file mature_fasta
+    val(related_sp)
+
+    script:
+    """
+    extract_miRNAs.pl $mature_fasta $related_sp > mature_related_ref.fa
+    """
+
+    output:
     path ('*_related_ref.fa')   , emit: related
 }
