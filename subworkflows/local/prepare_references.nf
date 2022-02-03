@@ -18,10 +18,8 @@ workflow PREPARE_REFERENCES {
         ch_genome = file(params.fasta)
     }
     if (params.mature.endsWith('.gz')) {
-        //reference_mirbaseMature.subscribe {println "Mature miRBase content: ${it.text}"}
         ch_mature = GUNZIP_MATURE ( [ [:], params.mature ] ).gunzip.map { it[1] }
     } else {
-        //reference_mirbaseMature.view { println "Mature miRBase content: ${it.text}" }
         ch_mature = file(params.mature)
         //ch_versions = ch_versions.mix(GUNZIP_FASTA.out.versions)
     }
@@ -35,7 +33,8 @@ workflow PREPARE_REFERENCES {
     PREPARE_GENOME{
         ch_genome
     }
-    ch_genome = PREPARE_GENOME.out.edited
+    ch_genome_edited = PREPARE_GENOME.out.edited
+    ch_genome_indices = PREPARE_GENOME.out.indices
 
     //// parsing reference mirbase (mature & hairpin)
     ch_target_sp = Channel.from(params.target_sp)
@@ -62,11 +61,10 @@ workflow PREPARE_REFERENCES {
         ch_related_out = Channel.from('none')
     }
 
-
-
     emit:
-    fasta = ch_genome
-    mature_out = ch_mature
+    fasta = ch_genome_edited
+    indices = ch_genome_indices
+    mature = ch_mature_out
     hairpin = ch_hairpin_out
     related = ch_related_out
 }

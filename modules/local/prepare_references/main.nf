@@ -1,18 +1,23 @@
 process PREPARE_GENOME {
     label 'process_low'
-    conda (params.enable_conda ? "conda-forge::sed=4.7" : null)
+    conda (params.enable_conda ? "conda-forge::sed=4.7 bioconda::bowtie=1.3.1" : null)
 
     input:
     file genome_fasta
 
     script:
     """
+    # parsing reference
     sed '/^[^>]/s/[^ATGCatgc]/N/g' $genome_fasta > genome.edited.fa
     sed 's/ .*//' genome.edited.fa > genome.edited.nowhite.fa
+
+    # build bowtie indices
+    bowtie-build genome.edited.fa genome --threads ${task.cpus}
     """
     output:
     path ('*.edited.fa'), emit: edited 
-    path ('*nowhite.fa'), emit: nowhite 
+    path ('*nowhite.fa'), emit: nowhite
+    path ('*.ebwt'), emit: indices
 }
 
 process PREPARE_MIRBASE_TARGET {
