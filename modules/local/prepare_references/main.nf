@@ -1,3 +1,4 @@
+// Parsing reference genome and build indices with bowtie
 process PREPARE_GENOME {
     label 'process_low'
     conda (params.enable_conda ? "conda-forge::sed=4.7 bioconda::bowtie=1.3.1" : null)
@@ -20,6 +21,7 @@ process PREPARE_GENOME {
     path ('*.ebwt'), emit: indices
 }
 
+// Process and filter miRBase referecnes. 
 process PREPARE_MIRBASE_TARGET {
     label 'process_low'
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)
@@ -39,7 +41,7 @@ process PREPARE_MIRBASE_TARGET {
     path ('mature_ref.fa')      , emit: mature
     path ('hairpin_ref.fa')     , emit: hairpin
 }
-
+// Get mature related species from miRBase mature sequences
 process PREPARE_MIRBASE_RELATED {
     label 'process_low'
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)

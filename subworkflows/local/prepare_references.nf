@@ -7,7 +7,7 @@ include { GUNZIP as GUNZIP_HAIRPIN }  from '../../modules/nf-core/modules/gunzip
 include { PREPARE_GENOME; PREPARE_MIRBASE_TARGET; PREPARE_MIRBASE_RELATED }  from '../../modules/local/prepare_references/main'
 
 workflow PREPARE_REFERENCES {
-//  take: //fix take sp params
+
     main:
     ch_versions = Channel.empty()
 
@@ -36,7 +36,7 @@ workflow PREPARE_REFERENCES {
     ch_genome_edited = PREPARE_GENOME.out.edited
     ch_genome_indices = PREPARE_GENOME.out.indices
 
-    //// parsing reference mirbase (mature & hairpin)
+    // parsing  mirbase references (mature & hairpin)
     ch_target_sp = Channel.from(params.target_sp)
     PREPARE_MIRBASE_TARGET (
         ch_mature,
@@ -46,7 +46,7 @@ workflow PREPARE_REFERENCES {
     ch_mature_out = PREPARE_MIRBASE_TARGET.out.mature
     ch_hairpin_out = PREPARE_MIRBASE_TARGET.out.hairpin
 
-    //// parsing related mirbase species (mature)
+    // parsing related mirbase species
     if (params.related_sp){
         ch_related_sp = Channel.from(params.related_sp)
         
