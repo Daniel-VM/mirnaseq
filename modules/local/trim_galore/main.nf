@@ -6,7 +6,7 @@ process TRIM_GALORE {
     file reads
 
     output:
-    path('*.gz')                , emit: zipped_reads
+    path('*.fq.gz')             , emit: zipped_reads
     path('*trimming_report.txt'), emit: trim_reports
     path("*_fastqc.{zip,html}") , emit: fastqc_reports
     path "versions.yml"         , emit: versions
