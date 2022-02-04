@@ -38,6 +38,7 @@ include { MULTIQC_ONRAW; MULTIQC    } from '../modules/local/multiqc/main'
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
 ========================================================================================
 */
+include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
 /*
 ========================================================================================
     RUN MAIN WORKFLOW
@@ -57,7 +58,7 @@ workflow MIRNASEQ {
     PREPARE_REFERENCES (
 
     )
-/*
+
     //
     // MODULE: Run FastQC
     //
@@ -88,7 +89,17 @@ workflow MIRNASEQ {
     MULTIQC (
         ch_multiqc_files.collect()
     )
-    */
+
+    //
+    // Program Versions
+    //
+    ch_versions = PREPARE_REFERENCES.out.versions
+    ch_versions = ch_versions.mix(FASTQC.out.versions)
+    ch_versions = ch_versions.mix(MULTIQC.out.versions)
+
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
 }
 /*
 ========================================================================================

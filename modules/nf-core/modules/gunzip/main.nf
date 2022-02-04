@@ -13,7 +13,7 @@ process GUNZIP {
     output:
     tuple val(meta), path("$gunzip"), emit: gunzip
     path ("*.fa")                   , emit: res
-    path "versions.yml"             , emit: versions
+    path ("versions.yml")           , emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -26,7 +26,7 @@ process GUNZIP {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        gunzip: \$(echo \$(gunzip --version 2>&1) | sed 's/^.*(gzip) //; s/ Copyright.*\$//')
+        gunzip: \$(gunzip --version | head -n 1 | awk '{print \$NF}')
     END_VERSIONS
     """
 }
