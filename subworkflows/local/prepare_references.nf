@@ -39,12 +39,20 @@ workflow PREPARE_REFERENCES {
     
 
     // get indices if required
-    INDICES (
-        ch_genome_edited
-    )
-    ch_genome_indices = INDICES.out.indices
+    if (params.bw_indices) {
 
-    // parsing  mirbase references (mature & hairpin)
+        ch_genome_indices = Channel.fromPath ( params.bw_indices )
+
+    } else {
+
+        INDICES (
+        ch_genome_edited
+        )
+        ch_genome_indices = INDICES.out.indices
+
+    }
+    
+    // parsing  miRBase references (mature & hairpin)
     ch_target_sp = Channel.from(params.target_sp)
     PREPARE_MIRBASE_TARGET (
         ch_mature,
@@ -54,7 +62,7 @@ workflow PREPARE_REFERENCES {
     ch_mature_out = PREPARE_MIRBASE_TARGET.out.mature
     ch_hairpin_out = PREPARE_MIRBASE_TARGET.out.hairpin
 
-    // parsing related mirbase species
+    // parsing related miRBase species
     if (params.related_sp){
 
         ch_related_sp = Channel.from(params.related_sp)
