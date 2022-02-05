@@ -51,13 +51,14 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/
 
 workflow MIRNASEQ {
 
-//    ch_versions         = Channel.empty()
+    ch_versions         = Channel.empty()
 //    ch_multiqc_files    = Channel.empty()
-//    ch_mirdeep_input    = Channel.empty()
+    ch_mirdeep_input    = Channel.empty()
 
     //
     // SUBWORKFLOW: PREPARE REFERENCE FILES (GENOME & MIRBASE)
-//    PREPARE_REFERENCES ()
+    PREPARE_REFERENCES ()
+    ch_genome_indices = PREPARE_REFERENCES.out.indices
 
     //
     // MODULE: Run FastQC
@@ -94,19 +95,23 @@ workflow MIRNASEQ {
     //
     ch_mirdeep_input = TRIM_GALORE.out.zipped_reads
     //ch_mirdeep_input = ch_mirdeep_input.toSortedList()
-    MIRDEEP2 ( ch_mirdeep_input )
+    MIRDEEP2 ( 
+        ch_mirdeep_input,
+        ch_genome_indices
+        )
 
     //
     // Program Versions
     //
-//    ch_versions = PREPARE_REFERENCES.out.versions
+    ch_versions = ch_versions.mix(PREPARE_REFERENCES.out.versions)
+// FIX add trim_galore versions    
 //    ch_versions = ch_versions.mix(FASTQC.out.versions)
 //    ch_versions = ch_versions.mix(MULTIQC.out.versions)
 //    ch_versions = ch_versions.mix(MIRDEEP2.out.versions)
 //
-//    CUSTOM_DUMPSOFTWAREVERSIONS (
-//        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-//    )
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
 }
 /*
 ========================================================================================

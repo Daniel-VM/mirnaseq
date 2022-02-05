@@ -26,6 +26,6 @@ id_generator <- function(input=NULL){
   return(id_out)
 }
 
-df <- data.frame(sample = input) %>%
+df <- data.frame(sample = paste("./", input , sep = '')) %>%
   mutate(id = id_generator(sample))
 write.table(df, file = "input_configFile.txt", quote = FALSE, col.names = FALSE, row.names = FALSE)
