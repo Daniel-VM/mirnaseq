@@ -11,7 +11,7 @@ process FASTQC {
     
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${reads.getSimpleName()}"// Add soft-links to original FastQs for consistent naming in pipeline
+    def prefix = task.ext.prefix ?: "${reads.getSimpleName()}"
     
     """
     fastqc $args --threads $task.cpus ${prefix}.fastq.gz

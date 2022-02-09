@@ -7,8 +7,8 @@ process MAPPER {
     file genome_indices
 
     output:
-    path ('*.fa')   , emit: reads_collapsed
-    path ('*.arf')  , emit: reads_arf
+    path ('*.fa')   , emit: collapsed_reads
+    path ('*.arf')  , emit: reads_vs_genome
 
     script:
     index_baseName = genome_indices.toString().tokenize(' ')[0].tokenize('.')[0]
