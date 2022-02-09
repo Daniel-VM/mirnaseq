@@ -33,7 +33,7 @@ include { MIRDEEP2        }             from '../subworkflows/local/mirdeep2'
 include { FASTQC                    }   from '../modules/local/fastqc/main'
 include { TRIM_GALORE               }   from '../modules/local/trim_galore/main'
 include { MULTIQC_ONRAW; MULTIQC    }   from '../modules/local/multiqc/main'
-
+include { GUNZIP_MIRDEEPIN }            from '../modules/local/gzip_mirdeepin/main'
 /*
 ========================================================================================
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
@@ -52,7 +52,7 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/
 workflow MIRNASEQ {
 
     ch_versions         = Channel.empty()
-//    ch_multiqc_files    = Channel.empty()
+    ch_multiqc_files    = Channel.empty()
     ch_mirdeep_input    = Channel.empty()
 
     //
@@ -77,7 +77,7 @@ workflow MIRNASEQ {
     TRIM_GALORE (
         raw_input
     )
-
+    
     //
     // MODULE: Run MULTIQC
     //
@@ -93,25 +93,28 @@ workflow MIRNASEQ {
     //
     // SUBWORKFLOW: microRNA analysis
     //
-    ch_mirdeep_input = TRIM_GALORE.out.zipped_reads
+//  GUNZIP_FASTA ( [ [:], TRIM_GALORE.out.zipped_reads ] ).gunzip.map { it[1] }
+
     //ch_mirdeep_input = ch_mirdeep_input.toSortedList()
+    GUNZIP_MIRDEEPIN ( TRIM_GALORE.out.zipped_reads )
+    
+    ch_mirdeep_input = GUNZIP_MIRDEEPIN.out.unzipped_reads
     MIRDEEP2 ( 
         ch_mirdeep_input,
-        ch_genome_indices
+        ch_genome_indices 
         )
 
     //
     // Program Versions
     //
-    ch_versions = ch_versions.mix(PREPARE_REFERENCES.out.versions)
-// FIX add trim_galore versions    
+//    ch_versions = PREPARE_REFERENCES.out.versions
 //    ch_versions = ch_versions.mix(FASTQC.out.versions)
 //    ch_versions = ch_versions.mix(MULTIQC.out.versions)
 //    ch_versions = ch_versions.mix(MIRDEEP2.out.versions)
 //
-    CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
+//    CUSTOM_DUMPSOFTWAREVERSIONS (
+//        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+//    )
 }
 /*
 ========================================================================================

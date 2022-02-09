@@ -39,10 +39,16 @@ workflow PREPARE_REFERENCES {
     
 
     // get indices if required
-    INDICES (
-        ch_genome_edited
-    )
-    ch_genome_indices = INDICES.out.indices
+    if ( params.bw_indices ) {
+
+        ch_genome_indices = Channel.fromPath( params.bw_indices )
+
+    } else {
+        INDICES (
+            ch_genome_edited
+            )
+            ch_genome_indices = INDICES.out.indices
+    }
 
     // parsing  mirbase references (mature & hairpin)
     ch_target_sp = Channel.from(params.target_sp)

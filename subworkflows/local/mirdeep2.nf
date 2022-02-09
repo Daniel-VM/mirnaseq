@@ -19,19 +19,16 @@ workflow MIRDEEP2 {
 
     main:
     ch_versions = Channel.empty()
-    // Uncompress processed reads
-    ch_mirdeep_input = GUNZIP_FASTA ( [ [:], ch_mirdeep_input ] ).gunzip.map { it[1] }
-//    ch_mirdeep_input = ch_mirdeep_input.toSortedList()
 
     // MODULE: CONFIG FILE - build a miRDeep2 configuration file
     CONFIG_FILE ( ch_mirdeep_input.collect() )
-    ch_config_input = Channel.from(CONFIG_FILE.out.file)
+    ch_config_input = CONFIG_FILE.out.file
 
     // MODULE: MAPPER
     MAPPER ( 
         ch_config_input,
-        ch_genome_indices
-         )
+        ch_genome_indices.collect()
+        )
     ch_mapper = MAPPER.out.reads_collapsed
 
 

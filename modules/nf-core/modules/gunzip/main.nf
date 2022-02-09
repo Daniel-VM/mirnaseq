@@ -11,9 +11,9 @@ process GUNZIP {
     tuple val(meta), path(archive)
 
     output:
-    tuple val(meta), path("$gunzip"), emit: gunzip
-    path ("*.fa")                   , emit: res
-    path ("versions.yml")           , emit: versions
+    tuple val(meta), path("$gunzip")    , emit: gunzip
+    path ("*.{fa,fq}")                   , emit: res
+    path ("versions.yml")               , emit: versions
 
     script:
     def args = task.ext.args ?: ''

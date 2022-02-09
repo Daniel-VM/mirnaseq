@@ -5,10 +5,14 @@ if (!require("dplyr")){
   install.packages("dplyr", dependencies=TRUE, repos='http://cloud.r-project.org/')
   library("dplyr")
 }
-
-# Command line arguments
-args <- commandArgs(trailingOnly = TRUE)
-input <- as.character(args[1:length(args)]) %>% basename
+if (!require("stringr")){
+  install.packages("stringr", dependencies=TRUE, repos='http://cloud.r-project.org/')
+  library("stringr")
+}
+# Command line arguments & get input path of current process
+args    <- commandArgs(trailingOnly = TRUE)  %>% str_sort(., numeric = TRUE)
+input   <- as.character(args[1:length(args)])
+path_to <- readLines( "configFile_wd.md" ) 
 
 # Generate three-letter code to each sample file
 id_generator <- function(input=NULL){
@@ -26,6 +30,7 @@ id_generator <- function(input=NULL){
   return(id_out)
 }
 
-df <- data.frame(sample = paste("./", input , sep = '')) %>%
-  mutate(id = id_generator(sample))
+df <- data.frame(sample = paste(path_to, input , sep = '/')) %>%
+  mutate(id = id_generator(sample)) 
+
 write.table(df, file = "input_configFile.txt", quote = FALSE, col.names = FALSE, row.names = FALSE)
