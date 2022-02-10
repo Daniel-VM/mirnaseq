@@ -78,7 +78,7 @@ workflow MIRNASEQ {
     //
     // MODULE: Run MULTIQC
     //
-    ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_config)
+    ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
     ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_reports)
     ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.fastqc_reports)
