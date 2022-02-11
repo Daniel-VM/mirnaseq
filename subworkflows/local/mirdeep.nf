@@ -49,6 +49,13 @@ workflow MIRDEEP {
         ch_mirbase_related,
         ch_mirbase_hairpin       
     )
+    // MODULE: Novel microRNAs processing
+    NOVEL_MIRNAS ( 
+        MIRDEEP2.out.toNovelproc,
+        ch_mirbase_mature,
+        ch_mirbase_hairpin
+    )
+
 
     emit:
     versions            = ch_versions

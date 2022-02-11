@@ -11,9 +11,9 @@ process MIRDEEP2 {
     file hairpin
 
     output:
-    path ('result*.{bed,html}') , emit: results
-    path ('result*.csv')        , emit: results_toNovelext
-    path ('versions.yml')       , emit: versions
+    path ('result*.{bed,csv,html}') , emit: results
+    path ('result*.csv')            , emit: toNovelproc
+    path ('versions.yml')           , emit: versions
     
     script:
     """
