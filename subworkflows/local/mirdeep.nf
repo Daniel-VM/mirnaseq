@@ -12,6 +12,7 @@ include { CONFIG_FILE }             from '../../modules/local/config_file/main'
 include { MAPPER }                  from '../../modules/local/mapper/main'
 include { MIRDEEP2 }                from '../../modules/local/mirdeep2/main'
 include { NOVEL_MIRNAS }            from '../../modules/local/novel_mirnas/main'
+include { QUANTIFY_THEMALL }            from '../../modules/local/quantify_themall/main'
 /*
 ========================================================================================
     RUN MAIN SUBWORKFLOW
@@ -59,11 +60,20 @@ workflow MIRDEEP {
     ch_mature_plusDenovo  = NOVEL_MIRNAS.out.matureRef_plusDenovo
     ch_hairpin_plusDenovo = NOVEL_MIRNAS.out.hairpinRef_plusDenovo
 
+    // MODULE: Known and Novel microRNA quantification
+    QUANTIFY_THEMALL (
+        ch_mature_plusDenovo,
+        ch_hairpin_plusDenovo,
+        ch_mapper_collapsed
+    )
+    ch_expression_matrix = QUANTIFY_THEMALL.out.mirnas_expMat
+
     // Versions
     ch_versions = ch_versions.mix( CONFIG_FILE.out.versions )
-    ch_versions = ch_versions.mix( MAPPER.out.versions )
+//    ch_versions = ch_versions.mix( MAPPER.out.versions )
     ch_versions = ch_versions.mix( MIRDEEP2.out.versions )
     ch_versions = ch_versions.mix( NOVEL_MIRNAS.out.versions )
+    ch_versions = ch_versions.mix( QUANTIFY_THEMALL.out.versions )
 
 
 
@@ -74,4 +84,5 @@ workflow MIRDEEP {
     arf                 = ch_mapper_arf
     mature_plusDenovo   = ch_mature_plusDenovo
     hairpin_plusDenovo  = ch_hairpin_plusDenovo
+    mirnas_expMat       = ch_expression_matrix
 }

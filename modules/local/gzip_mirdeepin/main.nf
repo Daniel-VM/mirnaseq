@@ -7,7 +7,7 @@ process GUNZIP_MIRDEEPIN {
     file archive
 
     output:
-    path ('*.fq') , emit: unzipped_reads
+    path ('*.{fq,fastq}') , emit: unzipped_reads
 
     script:
     def args = task.ext.args ?: ''

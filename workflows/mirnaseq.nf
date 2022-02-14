@@ -29,7 +29,7 @@ if ( !params.hairpin ) { exit 1, "Hairpin miRNA fasta file not found: ${params.h
 ========================================================================================
 */
 include { PREPARE_REFERENCES        }   from '../subworkflows/local/prepare_references'
-include { MIRDEEP                  }   from '../subworkflows/local/mirdeep'
+include { MIRDEEP                   }   from '../subworkflows/local/mirdeep'
 include { FASTQC                    }   from '../modules/local/fastqc/main'
 include { TRIM_GALORE               }   from '../modules/local/trim_galore/main'
 include { MULTIQC_ONRAW; MULTIQC    }   from '../modules/local/multiqc/main'

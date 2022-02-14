@@ -12,7 +12,7 @@ process GUNZIP {
 
     output:
     tuple val(meta), path("$gunzip")    , emit: gunzip
-    path ("*.{fa,fq}")                   , emit: res
+    path ("*.{fa,fq,fastq}")            , emit: res
     path ("versions.yml")               , emit: versions
 
     script:
