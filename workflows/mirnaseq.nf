@@ -67,8 +67,8 @@ workflow MIRNASEQ {
     //
     // MODULE: Run FastQC
     //
-//    FASTQC ( raw_input )  
-//    MULTIQC_ONRAW ( FASTQC.out.reports.collect() )
+    FASTQC ( raw_input )  
+    MULTIQC_ONRAW ( FASTQC.out.reports.collect() )
 
     //
     // MODULE: Run TRIM GALORE
@@ -78,12 +78,12 @@ workflow MIRNASEQ {
     //
     // MODULE: Run MULTIQC
     //
-//    ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
-//    ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
-//    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_reports)
-//    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.fastqc_reports)
-//    
-//    MULTIQC ( ch_multiqc_files.collect() )
+    ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_reports)
+    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.fastqc_reports)
+    
+    MULTIQC ( ch_multiqc_files.collect() )
 
     //
     // SUBWORKFLOW: microRNA analysis
@@ -104,8 +104,8 @@ workflow MIRNASEQ {
     // Program Versions
     //
     ch_versions = ch_versions.mix(PREPARE_REFERENCES.out.versions)
-//    ch_versions = ch_versions.mix(FASTQC.out.versions)
-//    ch_versions = ch_versions.mix(MULTIQC.out.versions)
+    ch_versions = ch_versions.mix(FASTQC.out.versions)
+    ch_versions = ch_versions.mix(MULTIQC.out.versions)
     ch_versions = ch_versions.mix(MIRDEEP.out.versions)
 
     CUSTOM_DUMPSOFTWAREVERSIONS (

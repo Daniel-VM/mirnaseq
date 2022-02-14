@@ -11,7 +11,7 @@ process MIRDEEP2 {
     file hairpin
 
     output:
-    path ('result*.{bed,csv,html}') , emit: results
+    path ('result*.{bed,html}')     , emit: res_format
     path ('result*.csv')            , emit: toNovelproc
     path ('versions.yml')           , emit: versions
     
@@ -30,5 +30,4 @@ process MIRDEEP2 {
         miRDeep2: \$( miRDeep2.pl -h | sed -nE '/^# miRDeep[0-9].[0-9].[0-9].[0-9]/p' |  tr -cd '[[:digit:]].' )
     END_VERSIONS 
     """
-
 }

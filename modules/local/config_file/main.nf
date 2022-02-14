@@ -6,12 +6,18 @@ process CONFIG_FILE {
     file input_files
 
     output:
-    path ("*.txt"), emit: file
-    path ("*.md") ,  emit: proj_dir
+    path ("*.txt")          , emit: file
+    path ("*.md")           , emit: proj_dir
+    path ("versions.yml")   , emit: versions
 
     script:
     """
     echo \$PWD > configFile_wd.md
     create_configFile.R $input_files
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        R-base: \$( R --version | awk 'NR==1{print \$3}' )
+    END_VERSIONS
     """
 }
