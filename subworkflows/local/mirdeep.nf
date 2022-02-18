@@ -12,7 +12,7 @@ include { CONFIG_FILE }             from '../../modules/local/config_file/main'
 include { MAPPER }                  from '../../modules/local/mapper/main'
 include { MIRDEEP2 }                from '../../modules/local/mirdeep2/main'
 include { NOVEL_MIRNAS }            from '../../modules/local/novel_mirnas/main'
-include { QUANTIFY_THEMALL }            from '../../modules/local/quantify_themall/main'
+include { QUANTIFY_THEMALL }        from '../../modules/local/quantify_themall/main'
 /*
 ========================================================================================
     RUN MAIN SUBWORKFLOW

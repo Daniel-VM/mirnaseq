@@ -1,5 +1,6 @@
 process MIRDEEP2 {
     label 'process_low'
+    label 'process_long'
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null )
 
     input:
