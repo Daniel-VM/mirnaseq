@@ -1,15 +1,15 @@
 process TRIM_GALORE {
     label 'process_low'
-    conda (params.enable_conda ? "bioconda::trim-galore=0.6.7" : null)
+    conda (params.enable_conda ? "bioconda::trim-galore=0.6.7 conda-forge::sed=4.8" : null)
 
     input:
     file reads
 
     output:
-    path('*.fq.gz')             , emit: zipped_reads
-    path('*trimming_report.txt'), emit: trim_reports
-    path("*_fastqc.{zip,html}") , emit: fastqc_reports
-    path "versions.yml"         , emit: versions
+    path('*.fq.gz')              , emit: zipped_reads
+    path('*trimming_report.txt') , emit: trim_reports
+    path('*_fastqc.{zip,html}')  , emit: fastqc_reports
+    path('versions.yml')         , emit: versions
 
     script: 
     """
@@ -17,7 +17,8 @@ process TRIM_GALORE {
                 --length ${params.min_length} \\
                 --max_length ${params.max_length} \\
                 --quality ${params.quality_cutoff} \\
-                --gzip $reads --fastqc
+                --gzip $reads \\
+                --fastqc
                 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
