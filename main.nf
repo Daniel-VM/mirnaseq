@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 /*
 ========================================================================================
-    nf-core/mirnaseq
+    mirnaseq
 ========================================================================================
     Github : https://github.com/Daniel-VM/mirnaseq
 ----------------------------------------------------------------------------------------
@@ -28,9 +28,9 @@ the user's input consistency (file format, mandatory parameters etc...)
 include { MIRNASEQ } from './workflows/mirnaseq'
 
 //
-// WORKFLOW: Run main nf-core/mirnaseq analysis pipeline
+// WORKFLOW: Run main mirnaseq analysis pipeline
 //
-workflow NFCORE_MIRNASEQ {
+workflow NF_MIRNASEQ {
     MIRNASEQ ()
 }
 
@@ -42,10 +42,10 @@ workflow NFCORE_MIRNASEQ {
 
 //
 // WORKFLOW: Execute a single named workflow for the pipeline
-// See: https://github.com/nf-core/rnaseq/issues/619
+// See: https://github.com/Daniel-VM/mirnaseq/issues/
 //
 workflow {
-    NFCORE_MIRNASEQ ()
+   NF_MIRNASEQ ()
 }
 
 /*

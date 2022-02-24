@@ -1,6 +1,6 @@
 process MULTIQC {
     label 'process_low'
-    conda (params.enable_conda ? "bioconda::multiqc=1.11" : null)
+    conda (params.enable_conda ? "bioconda::multiqc=1.12" : null)
 
     input:
     path multiqc_files
@@ -27,7 +27,7 @@ process MULTIQC {
 
 process MULTIQC_ONRAW {
     label 'process_low'
-    conda (params.enable_conda ? "bioconda::multiqc=1.11" : null)
+    conda (params.enable_conda ? "bioconda::multiqc=1.12" : null)
 
     input:
     path multiqc_files

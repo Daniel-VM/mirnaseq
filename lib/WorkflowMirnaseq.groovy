@@ -1,5 +1,5 @@
 //
-// This file holds several functions specific to the workflow/mirnaseq.nf in the nf-core/mirnaseq pipeline
+// This file holds several functions specific to the workflow/mirnaseq.nf in the mirnaseq pipeline
 //
 
 class WorkflowMirnaseq {

@@ -1,25 +1,21 @@
 ## Introduction
 
 <!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
-**nf-core/mirnaseq** is a bioinformatic pipeline to process and to analyze microRNA sequencing data. The approach used in nf-core/mirnaseq allows not only the identification and quantification of known-microRNA but also the estimation and quantification of novel microRNAs. This method has been designed and developed in the Unit of Viral Infection and Immunity at the National Center for Microbiology (Institute of Health Carlos III).
+**mirnaseq** is a bioinformatic pipeline to process and to analyze microRNA sequencing data. The approach used in *mirnaseq* allows not only the identification and quantification of known-microRNA but also the estimation and quantification of novel microRNAs. All this together, the pipeline returns a global expression matrix that gathers all your samples and thus facilitates downstream analysis. This method has been designed and developed in the Unit of Viral Infection and Immunity at the National Center for Microbiology (Institute of Health Carlos III). However, basic functionalities and processes have been included by using as references other pipelines that already exist such as [nf-core/smrnaseq](https://github.com/nf-core/smrnaseq/) and [nf-core/mrnaseq](https://github.com/nf-core/rnaseq).
 
-The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker/Singularity containers making installation trivial and results highly reproducible. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies. Where possible, these processes have been submitted to and installed from [nf-core/modules](https://github.com/nf-core/modules) in order to make them available to all nf-core pipelines, and to everyone within the Nextflow community!
-
-<!-- TODO nf-core: Add full-sized test dataset and amend the paragraph below if applicable -->
-On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources. The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/mirnaseq/results).
+The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies.
 
 ## Pipeline summary
-
 <!-- TODO nf-core: Fill in short bullet-pointed list of the default steps in the pipeline -->
 1. Quality Control (QC) of raw reads ([`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
 2. Adapter trimming ([`Trim Galore`](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/))
 3. Present QC for trimmed reads ([`MultiQC`](http://multiqc.info/))
-4. Identification of novel and known microRNAs ([`miRDeep2`](https://github.com/rajewsky-lab/mirdeep2))
+4. Identification of known and novel microRNAs ([`miRDeep2`](https://github.com/rajewsky-lab/mirdeep2))
     1. Mapping reads against reference genome with the mapper module.
     2. Novel and known miRNA identification.
     3. Parsing Novel microRNAs.
-    4. Quantifying both novel and known microRNAs.
-5. Report of microRNA analysis
+    4. Quantifying both known and novel microRNAs.
+5. Report of microRNA analysis and microRNA expression matrix for downstream analysis
 
 ## Quick Start
 
@@ -29,32 +25,35 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 3. Download the pipeline
     ```console
-    git clone https://github.com/Daniel-VM/mirnaseq.git
+    git clone -b dev https://github.com/Daniel-VM/mirnaseq.git
     ```
 
 4. Test it on a minimal dataset with a single command:
     ```console
-    nextflow run mirnaseq_main.nf -profile test,conda 
+    nextflow run main.nf -profile test,conda 
     ```
 
     > * The pipeline comes with config profile called `conda` which instruct the pipeline to use the named tool for software management. For example, `-profile test,conda`.
 
 5. Start running your own analysis!
 
-<!-- FIX IT
-    ```console
-    nextflow run nf-core/mirnaseq -profile <conda> --input 'path_to/*.fastq.gz' --genome GRCh38
+     ```console
+    nextflow run main.nf -profile conda \
+                        --input 'path_to/*.fastq.gz' \
+                        --genome GRCh38 \
+                        --target_sp hsa 
     ```
--->
-## Documentation
+> **NB:** The parameter *-target_sp* attemps to process human miRNAs as the main target specie for the analysis with miRDeep2. 
 
-The nf-core/mirnaseq pipeline comes with documentation about the pipeline [usage](https://github.com/Daniel-VM/mirnaseq/blob/dev/docs/usage.md), [parameters] and [output](https://github.com/Daniel-VM/mirnaseq/blob/dev/docs/output.md).
+## Documentation
+The *mirnaseq* pipeline comes with documentation about the pipeline [usage](https://github.com/Daniel-VM/mirnaseq/blob/dev/docs/usage.md), [parameters](https://github.com/Daniel-VM/mirnaseq/blob/dev/docs/parameters.md) and [output](https://github.com/Daniel-VM/mirnaseq/blob/dev/docs/output.md).
 
 ## Credits
+This pipeline has been written by Daniel-VM.
 
-The mirnaseq pipeline was originally written by Daniel-VM.
+We want to thank the nf-core community, but specially to [nf-core/smrnaseq](https://github.com/nf-core/smrnaseq/) and [nf-core/mrnaseq](https://github.com/nf-core/rnaseq) contributors and developers for the great effort they made to provide high-qualty tools for RNA-seq and small-RNAseq analysis. 
 
-We thank the following people for their extensive assistance in the development of this pipeline:
+In addition, we thank the following people for their extensive assistance in the development of this pipeline:
 1. Amanda Fernández-Rodríguez
 2. Óscar Brochado-Kith
 3. nf-core community
@@ -62,13 +61,11 @@ We thank the following people for their extensive assistance in the development 
 <!-- TODO nf-core: If applicable, make list of people who have also contributed -->
 
 ## Citations
-
 <!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
 <!-- If you use  nf-core/mirnaseq for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
 
 <!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
-
 
 You can cite the `nf-core` publication as follows:
 

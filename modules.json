@@ -1,6 +1,6 @@
 {
-    "name": "nf-core/mirnaseq",
-    "homePage": "https://github.com/nf-core/mirnaseq",
+    "name": "mirnaseq",
+    "homePage": "https://github.com/Daniel-VM/mirnaseq",
     "repos": {
         "nf-core/modules": {
             "custom/dumpsoftwareversions": {
