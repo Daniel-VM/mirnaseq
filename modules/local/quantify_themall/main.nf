@@ -9,7 +9,7 @@ process QUANTIFY_THEMALL {
     file collapsed_reads
 
     output:
-    path ('*.csv')    , emit: mirnas_expMat
+    path ('*.csv')          , emit: mirnas_expMat
     path ('*pdf*')          , emit: pdfs
     path ('versions.yml')   , emit: versions
     

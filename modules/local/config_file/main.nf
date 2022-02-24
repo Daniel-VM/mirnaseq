@@ -7,7 +7,6 @@ process CONFIG_FILE {
 
     output:
     path ("*.txt")          , emit: file
-    path ("*.md")           , emit: proj_dir
     path ("versions.yml")   , emit: versions
 
     script:

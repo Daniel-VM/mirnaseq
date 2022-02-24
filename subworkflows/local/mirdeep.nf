@@ -10,8 +10,7 @@
 include { GUNZIP as GUNZIP_FASTA }  from '../../modules/nf-core/modules/gunzip/main'
 include { CONFIG_FILE }             from '../../modules/local/config_file/main'
 include { MAPPER }                  from '../../modules/local/mapper/main'
-include { MIRDEEP2 }                from '../../modules/local/mirdeep2/main'
-include { NOVEL_MIRNAS }            from '../../modules/local/novel_mirnas/main'
+include { MIRDEEP2; NOVEL_MIRNAS }  from '../../modules/local/mirdeep2/main'
 include { QUANTIFY_THEMALL }        from '../../modules/local/quantify_themall/main'
 /*
 ========================================================================================
