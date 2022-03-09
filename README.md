@@ -2,7 +2,7 @@
 ## Introduction
 
 <!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
-**mirnaseq** is a bioinformatic pipeline to process and to analyze microRNA sequencing data. The approach used in *mirnaseq* allows not only the identification and quantification of known-microRNA but also the estimation and quantification of novel microRNAs. All this together, the pipeline returns a global expression matrix that gathers all your samples and thus facilitates downstream analysis. This method has been designed and developed in the Unit of Viral Infection and Immunity at the National Center for Microbiology (Institute of Health Carlos III). However, basic functionalities and processes have been included by using as references other pipelines that already exist such as [nf-core/smrnaseq](https://github.com/nf-core/smrnaseq/) and [nf-core/mrnaseq](https://github.com/nf-core/rnaseq).
+**mirnaseq** is a bioinformatic pipeline to process and to analyze microRNA sequencing data. The approach used in *mirnaseq* allows not only the identification and quantification of known-microRNA but also the estimation and quantification of novel microRNAs. All this together, the pipeline returns a global expression matrix that gathers all your samples and thus facilitates downstream analysis. This method has been designed and developed in the Unit of Viral Infection and Immunity at the National Center for Microbiology. However, basic functionalities and processes have been included by using as references other pipelines that already exist such as [nf-core/smrnaseq](https://github.com/nf-core/smrnaseq/) and [nf-core/mrnaseq](https://github.com/nf-core/rnaseq).
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies.
 
@@ -52,12 +52,13 @@ The *mirnaseq* pipeline comes with documentation about the pipeline [usage](http
 ## Credits
 This pipeline has been written by Daniel-VM.
 
-We want to thank the nf-core community, but specially to [nf-core/smrnaseq](https://github.com/nf-core/smrnaseq/) and [nf-core/mrnaseq](https://github.com/nf-core/rnaseq) contributors and developers for the great effort they made to provide high-qualty tools for RNA-seq and small-RNAseq analysis. 
+We want to thank the nf-core community, but specially to [nf-core/smrnaseq](https://github.com/nf-core/smrnaseq/) and [nf-core/mrnaseq](https://github.com/nf-core/rnaseq) contributors and developers for the great effort they made to provide high-qualty tools for RNA-seq and small-RNAseq analysis. In addition, we wish to thank [BU-ISCIII](https://github.com/BU-ISCIII) for their assistance in key steps of this pipeline.   
 
 In addition, we thank the following people for their extensive assistance in the development of this pipeline:
 1. Amanda Fernández-Rodríguez
 2. Óscar Brochado-Kith
-3. nf-core community
+3. BU-ISCIII.
+4. nf-core community
 
 <!-- TODO nf-core: If applicable, make list of people who have also contributed -->
 
