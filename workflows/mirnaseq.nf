@@ -18,7 +18,13 @@ ch_multiqc_config = file("$projectDir/assets/multiqc_config.yaml", checkIfExists
 ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
 
 // Stage reference files
-params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
+if ( params.genome_file ){
+    //params.fasta = Channel.from(params.genome_file, checkIfExists: true)
+    params.fasta = params.genome_file
+    
+}else{
+    params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
+}
 if ( !params.fasta )   { exit 1, "Reference genome Fasta file not found: ${params.fasta}" }
 if ( !params.mature )  { exit 1, "Mature miRNA fasta file not found: ${params.mature}" }
 if ( !params.hairpin ) { exit 1, "Hairpin miRNA fasta file not found: ${params.hairpin}" }
@@ -55,6 +61,7 @@ workflow MIRNASEQ {
 
     //
     // SUBWORKFLOW: PREPARE REFERENCE FILES (GENOME & MIRBASE)
+    //
     PREPARE_REFERENCES ()
     ch_genome_edited    = PREPARE_REFERENCES.out.genome
     ch_genome_nowhite   = PREPARE_REFERENCES.out.genome_nowhite

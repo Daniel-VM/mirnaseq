@@ -17,20 +17,37 @@ process MIRDEEP2 {
     path ('versions.yml')           , emit: versions
     
     script:
-    """
-    miRDeep2.pl $collapsed_reads \\
-                $genome \\
-	            $reads_vs_genome \\
-	            $mature \\
-	            $mature_related \\
-	            $hairpin \\
-	            -q miRBase.mrd
+    if( params.related_sp){
+        """
+        miRDeep2.pl $collapsed_reads \\
+                    $genome \\
+                    $reads_vs_genome \\
+                    $mature \\
+                    $mature_related \\
+                    $hairpin \\
+                    -q miRBase.mrd
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        miRDeep2: \$( miRDeep2.pl -h | sed -nE '/^# miRDeep[0-9].[0-9].[0-9].[0-9]/p' |  tr -cd '[[:digit:]].' )
-    END_VERSIONS 
-    """
+        cat <<-END_VERSIONS > versions.yml
+        "${task.process}":
+            miRDeep2: \$( miRDeep2.pl -h | sed -nE '/^# miRDeep[0-9].[0-9].[0-9].[0-9]/p' |  tr -cd '[[:digit:]].' )
+        END_VERSIONS 
+        """
+    } else {
+        """
+        miRDeep2.pl $collapsed_reads \\
+                    $genome \\
+                    $reads_vs_genome \\
+                    $mature \\
+                    none \\
+                    $hairpin \\
+                    -q miRBase.mrd
+                    
+        cat <<-END_VERSIONS > versions.yml
+        "${task.process}":
+            miRDeep2: \$( miRDeep2.pl -h | sed -nE '/^# miRDeep[0-9].[0-9].[0-9].[0-9]/p' |  tr -cd '[[:digit:]].' )
+        END_VERSIONS 
+        """
+        }
 }
 
 process NOVEL_MIRNAS {

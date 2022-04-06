@@ -49,18 +49,24 @@ workflow PREPARE_REFERENCES {
         ch_genome_indices = Channel.fromPath( params.bt_indices )
     } else {
         INDICES ( ch_genome_edited )
-            ch_genome_indices = INDICES.out.indices
+        ch_genome_indices = INDICES.out.indices
     }
    
     // parsing  miRBase references (mature & hairpin)
-    ch_target_sp = Channel.from(params.target_sp)
-    PREPARE_MIRBASE_TARGET (
-        ch_mature,
-        ch_hairpin,
-        ch_target_sp
-        )
-    ch_mature_out   = PREPARE_MIRBASE_TARGET.out.mature
-    ch_hairpin_out  = PREPARE_MIRBASE_TARGET.out.hairpin
+    if (params.target_sp){
+        ch_target_sp = Channel.from(params.target_sp)
+        PREPARE_MIRBASE_TARGET (
+            ch_mature,
+            ch_hairpin,
+            ch_target_sp
+            )
+        ch_mature_out   = PREPARE_MIRBASE_TARGET.out.mature
+        ch_hairpin_out  = PREPARE_MIRBASE_TARGET.out.hairpin
+        ch_versions = ch_versions.mix( PREPARE_MIRBASE_TARGET.out.versions )
+    } else {
+        ch_mature_out   = ch_mature
+        ch_hairpin_out   = ch_hairpin
+    }
 
     // parsing related mirbase species
     if ( params.related_sp ){
@@ -73,12 +79,12 @@ workflow PREPARE_REFERENCES {
         ch_related_out = PREPARE_MIRBASE_RELATED.out.related
     
     } else {
-        ch_related_out = Channel.from( 'none' )
+        ch_related_out = Channel.from('none')
     }
 
     // combine versions
     ch_versions = ch_versions.mix( PREPARE_GENOME.out.versions ) 
-    ch_versions = ch_versions.mix( PREPARE_MIRBASE_TARGET.out.versions )
+
 
     emit:
     genome          = ch_genome_edited
