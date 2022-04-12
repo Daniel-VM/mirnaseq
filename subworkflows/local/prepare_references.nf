@@ -10,7 +10,7 @@
 include { GUNZIP as GUNZIP_FASTA }      from '../../modules/nf-core/modules/gunzip/main'
 include { GUNZIP as GUNZIP_MATURE }     from '../../modules/nf-core/modules/gunzip/main'
 include { GUNZIP as GUNZIP_HAIRPIN }    from '../../modules/nf-core/modules/gunzip/main'
-include { PREPARE_GENOME; INDICES; PREPARE_MIRBASE_TARGET; PREPARE_MIRBASE_RELATED }  from '../../modules/local/prepare_references/main'
+include { PREPARE_GENOME; INDICES; PREPARE_MICRORNAS; PREPARE_MIRBASE_TARGET; PREPARE_MIRBASE_RELATED }  from '../../modules/local/prepare_references/main'
 
 /*
 ========================================================================================
@@ -64,8 +64,9 @@ workflow PREPARE_REFERENCES {
         ch_hairpin_out  = PREPARE_MIRBASE_TARGET.out.hairpin
         ch_versions = ch_versions.mix( PREPARE_MIRBASE_TARGET.out.versions )
     } else {
-        ch_mature_out   = ch_mature
-        ch_hairpin_out   = ch_hairpin
+        PREPARE_MICRORNAS(ch_mature, ch_hairpin)
+        ch_mature_out    = PREPARE_MICRORNAS.out.mature
+        ch_hairpin_out   = PREPARE_MICRORNAS.out.hairpin
     }
 
     // parsing related mirbase species

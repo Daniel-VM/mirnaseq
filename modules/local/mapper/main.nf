@@ -13,12 +13,12 @@ process MAPPER {
     path ('versions.yml')   , emit: versions
 
     script:
+    def args = task.ext.args ?: ''
     index_baseName = genome_indices.toString().tokenize(' ')[0].tokenize('.')[0]
 
     """
     mapper.pl $input_list \\
-    -d -e -h -j -m -v \\
-	-l 17 \\
+    $args \\
 	-o ${task.cpus} \\
 	-s reads_collapsed.fa \\
 	-p $index_baseName \\
@@ -29,4 +29,5 @@ process MAPPER {
         miRDeep2: \$( miRDeep2.pl -h | sed -nE '/^# miRDeep[0-9].[0-9].[0-9].[0-9]/p' |  tr -cd '[[:digit:]].' )
     END_VERSIONS
     """
+    
 }

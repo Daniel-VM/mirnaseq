@@ -4,7 +4,7 @@
 ========================================================================================
 */
 // Check mandatory parameters
-if ( params.input ) { raw_input = Channel.fromPath( params.input ) } else { exit 1, 'Input fastqc files not specified!' }
+if ( params.input ) { raw_input = Channel.fromPath( params.input ) } else { exit 1, 'Input fastqc files not defined!' }
 
 /*
 ========================================================================================
