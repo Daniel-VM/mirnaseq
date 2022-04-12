@@ -50,7 +50,27 @@ process INDICES {
     """
 }
 
-// Process and filter miRBase referecnes. 
+// Process miRBase references
+process PREPARE_MICRORNAS {
+    label 'process_low'
+
+    input:
+    file mature_fasta
+    file hairpin_fasta
+    
+    output:
+    path ('mature_ref.fa')      , emit: mature
+    path ('hairpin_ref.fa')     , emit: hairpin  
+    
+    script:
+    """
+    sed '/[^>]/s/[[:blank:]].*//g' $mature_fasta > mature_ref.fa
+    sed '/[^>]/s/[[:blank:]].*//g' $hairpin_fasta | sed '/^[^>]/s/[^ATGCatgc]/N/g' > hairpin_ref.fa
+    """  
+}
+
+
+// Process and filter miRBase references based on target specie/s. 
 process PREPARE_MIRBASE_TARGET {
     label 'process_low'
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)
@@ -68,7 +88,7 @@ process PREPARE_MIRBASE_TARGET {
     script:
     """
     extract_miRNAs.pl $mature_fasta $target_sp > mature_ref.fa
-    extract_miRNAs.pl $hairpin_fasta $target_sp > hairpin_ref.fa
+    extract_miRNAs.pl $hairpin_fasta $target_sp | sed '/^[^>]/s/[^ATGCatgc]/N/g' > hairpin_ref.fa
 
     # Version
     cat <<-END_VERSIONS > versions.yml
