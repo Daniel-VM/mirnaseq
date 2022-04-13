@@ -40,7 +40,7 @@ process INDICES {
     script:
     """
     # build bowtie indices
-        bowtie-build $genome_fasta genome --threads ${task.cpus}
+    bowtie-build $genome_fasta genome --threads ${task.cpus}
 
     # version
     cat <<-END_VERSIONS > versions.yml
@@ -65,7 +65,8 @@ process PREPARE_MICRORNAS {
     script:
     """
     sed '/[^>]/s/[[:blank:]].*//g' $mature_fasta > mature_ref.fa
-    sed '/[^>]/s/[[:blank:]].*//g' $hairpin_fasta | sed '/^[^>]/s/[^ATGCatgc]/N/g' > hairpin_ref.fa
+    sed '/[^>]/s/[[:blank:]].*//g' $hairpin_fasta > hairpin_tmp.fa
+    sed '/^[^>]/s/[^ATGCatgc]/N/g' hairpin_tmp.fa > hairpin_ref.fa
     """  
 }
 
@@ -88,7 +89,8 @@ process PREPARE_MIRBASE_TARGET {
     script:
     """
     extract_miRNAs.pl $mature_fasta $target_sp > mature_ref.fa
-    extract_miRNAs.pl $hairpin_fasta $target_sp | sed '/^[^>]/s/[^ATGCatgc]/N/g' > hairpin_ref.fa
+    extract_miRNAs.pl $hairpin_fasta $target_sp > hairpin_tmp.fa
+    sed '/^[^>]/s/[^ATGCatgc]/N/g' hairpin_tmp.fa > hairpin_ref.fa
 
     # Version
     cat <<-END_VERSIONS > versions.yml

@@ -55,8 +55,8 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/
 // def multiqc_report = []
 
 workflow MIRNASEQ {
-    ch_versions         = Channel.empty()
-    ch_multiqc_files    = Channel.empty()
+//    ch_versions         = Channel.empty()
+//    ch_multiqc_files    = Channel.empty()
     ch_mirdeep_input    = Channel.empty()
 
     //
@@ -74,8 +74,8 @@ workflow MIRNASEQ {
     //
     // MODULE: Run FastQC
     //
-    FASTQC ( raw_input )  
-    MULTIQC_ONRAW ( FASTQC.out.reports.collect() )
+//    FASTQC ( raw_input )  
+//    MULTIQC_ONRAW ( FASTQC.out.reports.collect() )
 
     //
     // MODULE: Run TRIM GALORE
@@ -85,12 +85,12 @@ workflow MIRNASEQ {
     //
     // MODULE: Run MULTIQC
     //
-    ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
-    ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_reports)
-    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.fastqc_reports)
+//    ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
+//    ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
+//    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_reports)
+//    ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.fastqc_reports)
     
-    MULTIQC ( ch_multiqc_files.collect() )
+//    MULTIQC ( ch_multiqc_files.collect() )
 
     //
     // SUBWORKFLOW: microRNA analysis
@@ -110,14 +110,14 @@ workflow MIRNASEQ {
     //
     // Program Versions
     //
-    ch_versions = ch_versions.mix(PREPARE_REFERENCES.out.versions)
-    ch_versions = ch_versions.mix(FASTQC.out.versions)
-    ch_versions = ch_versions.mix(MULTIQC.out.versions)
-    ch_versions = ch_versions.mix(MIRDEEP.out.versions)
+//    ch_versions = ch_versions.mix(PREPARE_REFERENCES.out.versions)
+//    ch_versions = ch_versions.mix(FASTQC.out.versions)
+//    ch_versions = ch_versions.mix(MULTIQC.out.versions)
+//    ch_versions = ch_versions.mix(MIRDEEP.out.versions)
 
-    CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-        )
+//    CUSTOM_DUMPSOFTWAREVERSIONS (
+//        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+//        )
 }
 /*
 ========================================================================================
