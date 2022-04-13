@@ -65,15 +65,15 @@ process NOVEL_MIRNAS {
     path ('versions.yml')               , emit: versions
 
     script:
+    if(params.denovo_filter == true){
     /*
-    Filteirng miRNA_denovo matrix from the mirdeep2.pl output, and remove non-essential tables
-        Only those miRNAs that fulfill the following criteria will be save for subsequent analysis (Bonnet E et. al. 2004):
+    Filteirng novel microRNAS in the mirdeep2.pl output
+        Only those miRNAs that fulfill the following criteria will be saved for downstream analysis (Bonnet E et. al. 2004):
         (1) A miRDeep2 score cut-off of >4;
         (2) An estimated probability that the miRNA candidate is a true positive > 0;
         (3) The total read counts of the predicted mature are >100;
         (4) A significant randfold p-value of the excised potential miRNA hairpin.
     */
-    if(params.denovo_filter == true){
         """
         cat $MIRDEEP_TAB | \
             sed -n '/novel miRNAs predicted by miRDeep2/,\$p' | \
