@@ -43,11 +43,12 @@ done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 # STEP 1 - CONVERTING MIRDEEP DENOVO SEQUENCES INTO MULTIFASA FILE
+# !!!!! FIX hsa- prefix. Not valid when we are not looking for specific hsa mirnas
 # mature
 while read m; do
 	NID_MATURE="$(echo "${m}" | cut -f1)"
 	NSEQ_MATURE="$(echo "${m}" | cut -f14)"
-	echo ">hsa-${NID_MATURE}"
+	echo ">${NID_MATURE}"
 	printf '%s\n' "${NSEQ_MATURE}" | awk '{print toupper($0)}'
 done < $NOVEL_TAB > mature_de_novo.fa
 
@@ -55,7 +56,7 @@ done < $NOVEL_TAB > mature_de_novo.fa
 while read p; do
     NID_PRECURSOR="$(echo "${p}" | cut -f1)"
     NSEQ_PRECURSOR="$(echo "${p}" | cut -f16)"
-    echo ">hsa-${NID_PRECURSOR}"
+    echo ">${NID_PRECURSOR}"
     printf '%s\n' "${NSEQ_PRECURSOR}" | awk '{print toupper($0)}'
 done < $NOVEL_TAB > precursor_de_novo.fa
 
