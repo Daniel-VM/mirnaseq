@@ -43,14 +43,13 @@ done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 # STEP 1 - CONVERTING MIRDEEP DENOVO SEQUENCES INTO MULTIFASA FILE
-# !!!!! FIX hsa- prefix. Not valid when we are not looking for specific hsa mirnas
 # mature
 while read m; do
 	NID_MATURE="$(echo "${m}" | cut -f1)"
 	NSEQ_MATURE="$(echo "${m}" | cut -f14)"
 	echo ">${NID_MATURE}"
 	printf '%s\n' "${NSEQ_MATURE}" | awk '{print toupper($0)}'
-done < $NOVEL_TAB > mature_de_novo.fa
+done < ${NOVEL_TAB} > mature_de_novo.fa
 
 # hairpin/precursor
 while read p; do
@@ -58,7 +57,7 @@ while read p; do
     NSEQ_PRECURSOR="$(echo "${p}" | cut -f16)"
     echo ">${NID_PRECURSOR}"
     printf '%s\n' "${NSEQ_PRECURSOR}" | awk '{print toupper($0)}'
-done < $NOVEL_TAB > precursor_de_novo.fa
+done < ${NOVEL_TAB} > precursor_de_novo.fa
 
 # STEP 2 -  CONVERT ARN SEQUENCES INTO DNA ACCORDING TO MIRDEEP2 BEST PRACTICES
 rna2dna.pl mature_de_novo.fa > DNA_mature_de_novo.fa

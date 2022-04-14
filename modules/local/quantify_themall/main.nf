@@ -24,7 +24,7 @@ process QUANTIFY_THEMALL {
     # Versions
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        miRDeep2: \$( miRDeep2.pl -h | sed -nE '/^# miRDeep[0-9].[0-9].[0-9].[0-9]/p' |  tr -cd '[[:digit:]].' )
+        miRDeep2: \$( miRDeep2.pl -h | grep '[0-9].[0-9].[0-9].[0-9]' | head -n1 | tr -cd '[[:digit:]].' )
     END_VERSIONS
     """
 }

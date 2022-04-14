@@ -62,18 +62,9 @@ process NOVEL_MIRNAS {
     output:
     path ('mature_ref_plusDenovo.fa')   , emit: matureRef_plusDenovo
     path ('hairpin_ref_plusDenovo.fa')  , emit: hairpinRef_plusDenovo
-    path ('*.tsv')                      , emit: denovo_tab
     path ('versions.yml')               , emit: versions
 
     script:
-    """
-    # Filter denovo microRNAs predicted by miRDeep2
-    cat $MIRDEEP_TAB | \
-        sed -n '/novel miRNAs predicted by miRDeep2/,\$p' | \
-        sed '/mature miRBase miRNAs detected by miRDeep2/,\$d' | \
-        sed '/^\$/d' | sed 1,2d > denovo_miRNAs.tsv
-
-    """
     if(params.denovo_filter == true){
     /*
     Filteirng novel microRNAS in the mirdeep2.pl output
@@ -84,26 +75,44 @@ process NOVEL_MIRNAS {
         (4) A significant randfold p-value of the excised potential miRNA hairpin.
     */
         """
+        # Filter denovo microRNAs predicted by miRDeep2
+        cat $mirdeep_tab | \
+            sed -n '/novel miRNAs predicted by miRDeep2/,\$p' | \
+            sed '/mature miRBase miRNAs detected by miRDeep2/,\$d' | \
+            sed '/^\$/d' | sed 1,2d > denovo_miRNAs.tsv
+        
         # Apply this filter to identify more reliable denovo microRNA 
         cat denovo_miRNAs.tsv | \
             awk -F"\t" '(\$2>4) && (\$5 > 100) && (\$9=="yes")' | \
-            awk -F"\t"  '! ( \$3 ~ /^0/)' > denovo_miRNAs_filtered.tsv
+            awk -F"\t" '! ( \$3 ~ /^0/)' > denovo_miRNAs_filtered.tsv
         
         # Add novel microRNAs to reference files as fasta sequences
         mirdeep_novelProc.sh -i denovo_miRNAs_filtered.tsv -m $mature -p $hairpin
+
+        # Versions
+        cat <<-END_VERSIONS > versions.yml
+        "${task.process}":
+            miRDeep2: \$(  miRDeep2.pl -h | grep '[0-9].[0-9].[0-9].[0-9]' | head -n1 | tr -cd '[[:digit:]].' )
+        END_VERSIONS 
         """
     }else if(params.denovo_filter == false){
         """
+        # Filter denovo microRNAs predicted by miRDeep2
+        cat $mirdeep_tab | \
+            sed -n '/novel miRNAs predicted by miRDeep2/,\$p' | \
+            sed '/mature miRBase miRNAs detected by miRDeep2/,\$d' | \
+            sed '/^\$/d' | sed 1,2d > denovo_miRNAs.tsv
+
         # Add novel microRNAs to reference files as fasta sequences
         mirdeep_novelProc.sh -i denovo_miRNAs.tsv -m $mature -p $hairpin
+
+        # Versions
+        cat <<-END_VERSIONS > versions.yml
+        "${task.process}":
+            miRDeep2: \$(  miRDeep2.pl -h | grep '[0-9].[0-9].[0-9].[0-9]' | head -n1 | tr -cd '[[:digit:]].' )
+        END_VERSIONS 
         """
-    } else {
-        exit 1, "Invalid '${params.denovo_filter}' value. Set --denovo_filter true or --denovo_filter false"
-    }
-    """
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        miRDeep2: \$( miRDeep2.pl -h | sed -nE '/^# miRDeep[0-9].[0-9].[0-9].[0-9]/p' |  tr -cd '[[:digit:]].' )
-    END_VERSIONS 
-    """
+    } else{
+        exit 1, "Invalid value: --denovo_filter '${params.denovo_filter}'. Only boolean vaules are allowed. Try: --denovo_filter true   //   --denovo_filter false."
+    } 
 }
