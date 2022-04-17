@@ -53,6 +53,7 @@ process INDICES {
 // Process miRBase references
 process PREPARE_MICRORNAS {
     label 'process_low'
+    conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)
 
     input:
     file mature_fasta
@@ -64,12 +65,14 @@ process PREPARE_MICRORNAS {
     
     script:
     """
-    sed '/[^>]/s/[[:blank:]].*//g' $mature_fasta > mature_ref.fa
-    sed '/[^>]/s/[[:blank:]].*//g' $hairpin_fasta > hairpin_tmp.fa
-    sed '/^[^>]/s/[^ATGCatgc]/N/g' hairpin_tmp.fa > hairpin_ref.fa
+    rna2dna.pl $mature_fasta | \
+        sed '/[^>]/s/[[:blank:]].*//g' > mature_ref.fa
+        
+    rna2dna.pl $hairpin_fasta | \
+        sed '/[^>]/s/[[:blank:]].*//g' | \
+        sed '/^[^>]/s/[^ATGCatgc]/N/g' > hairpin_ref.fa
     """  
 }
-
 
 // Process and filter miRBase references based on target specie/s. 
 process PREPARE_MIRBASE_TARGET {
@@ -88,6 +91,7 @@ process PREPARE_MIRBASE_TARGET {
 
     script:
     """
+    # Filter target microRNAs and convert sequences into DNA format automatically
     extract_miRNAs.pl $mature_fasta $target_sp > mature_ref.fa
     extract_miRNAs.pl $hairpin_fasta $target_sp > hairpin_tmp.fa
     sed '/^[^>]/s/[^ATGCatgc]/N/g' hairpin_tmp.fa > hairpin_ref.fa
@@ -114,6 +118,7 @@ process PREPARE_MIRBASE_RELATED {
     
     script:
     """
+    # Filter related microRNAs and convert sequences into DNA format automatically
     extract_miRNAs.pl $mature_fasta $related_sp > mature_related_ref.fa
     """
 }
