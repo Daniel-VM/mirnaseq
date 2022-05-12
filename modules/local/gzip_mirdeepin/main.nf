@@ -1,6 +1,6 @@
 process GUNZIP_MIRDEEPIN {
     tag "$archive"
-    label 'process_low'
+    label 'process_medium'
     conda (params.enable_conda ? "conda-forge::sed=4.8" : null)
 
     input:

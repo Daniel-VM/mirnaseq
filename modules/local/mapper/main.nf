@@ -1,5 +1,5 @@
 process MAPPER {
-    label 'process_low'
+    label 'process_medium'
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)
 
     input:

@@ -27,7 +27,7 @@ process PREPARE_GENOME {
 
 // Build indices with bowtie
 process INDICES {
-    label 'process_low'
+    label 'process_medium'
     conda (params.enable_conda ? "bioconda::bowtie=1.3.1" : null)
 
     input:
