@@ -7,3 +7,5 @@ testing/
 testing*
 *.pyc
 *results.tar.gz
+sjob/
+nextflow_*.config

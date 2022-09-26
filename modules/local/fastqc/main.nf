@@ -1,5 +1,7 @@
 process FASTQC {
     label 'process_medium'
+
+    
     conda (params.enable_conda ? "bioconda::fastqc=0.11.9" : null)
 
     input:
@@ -12,7 +14,7 @@ process FASTQC {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${reads.getSimpleName()}"
-    
+    println "${task.cpus}"
     """
     fastqc $args --threads $task.cpus ${prefix}.fastq.gz
     

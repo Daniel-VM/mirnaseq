@@ -34,18 +34,19 @@ if ( !params.hairpin ) { exit 1, "Hairpin miRNA fasta file not found: ${params.h
     IMPORT LOCAL MODULES/SUBWORKFLOWS
 ========================================================================================
 */
-include { PREPARE_REFERENCES        }   from '../subworkflows/local/prepare_references'
-include { MIRDEEP                   }   from '../subworkflows/local/mirdeep'
-include { FASTQC                    }   from '../modules/local/fastqc/main'
-include { TRIM_GALORE               }   from '../modules/local/trim_galore/main'
-include { MULTIQC_ONRAW; MULTIQC    }   from '../modules/local/multiqc/main'
-include { GUNZIP_MIRDEEPIN          }   from '../modules/local/gzip_mirdeepin/main'
+//include { PREPARE_REFERENCES        }   from '../subworkflows/local/prepare_references'
+include { FASTQC                    }   from '../modules/nf-core/modules/fastqc/main'
+//include { TRIM_GALORE               }   from '../modules/local/trim_galore/main'
+//include { MULTIQC_ONRAW; MULTIQC    }   from '../modules/local/multiqc/main'
+//include { GUNZIP_MIRDEEPIN          }   from '../modules/local/gzip_mirdeepin/main'
+//include { MIRDEEP                   }   from '../subworkflows/local/mirdeep'
 /*
 ========================================================================================
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
 ========================================================================================
 */
-include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
+include { INPUT_CHECK           }   from '../subworkflows/local/input_check'
+//include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 /*
 ========================================================================================
     RUN MAIN WORKFLOW
@@ -60,21 +61,31 @@ workflow MIRNASEQ {
     ch_mirdeep_input    = Channel.empty()
 
     //
+    // SUBWORKFLOW: Read samplesheet, validate and stage input files
+    //
+    INPUT_CHECK (
+        raw_input
+    )
+    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+    reads       = INPUT_CHECK.out.reads
+    //
     // SUBWORKFLOW: PREPARE REFERENCE FILES (GENOME & MIRBASE)
     //
-    PREPARE_REFERENCES ()
-    ch_genome_edited    = PREPARE_REFERENCES.out.genome
-    ch_genome_nowhite   = PREPARE_REFERENCES.out.genome_nowhite
-    ch_genome_indices   = PREPARE_REFERENCES.out.indices
-    ch_mirbase_mature   = PREPARE_REFERENCES.out.mature
-    ch_mirbase_hairpin  = PREPARE_REFERENCES.out.hairpin
-    ch_mirbase_related  = PREPARE_REFERENCES.out.related
+//    PREPARE_REFERENCES ()
+//    ch_genome_edited    = PREPARE_REFERENCES.out.genome
+//    ch_genome_nowhite   = PREPARE_REFERENCES.out.genome_nowhite
+//    ch_genome_indices   = PREPARE_REFERENCES.out.indices
+//    ch_mirbase_mature   = PREPARE_REFERENCES.out.mature
+//    ch_mirbase_hairpin  = PREPARE_REFERENCES.out.hairpin
+//    ch_mirbase_related  = PREPARE_REFERENCES.out.related
     
 
     //
     // MODULE: Run FastQC
     //
-    FASTQC ( raw_input )  
+    FASTQC ( reads )  
+
+/*
     MULTIQC_ONRAW ( FASTQC.out.reports.collect() )
 
     //
@@ -118,6 +129,7 @@ workflow MIRNASEQ {
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
         )
+*/
 }
 /*
 ========================================================================================
