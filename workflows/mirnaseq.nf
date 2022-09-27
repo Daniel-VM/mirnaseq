@@ -34,10 +34,8 @@ if ( !params.hairpin ) { exit 1, "Hairpin miRNA fasta file not found: ${params.h
     IMPORT LOCAL MODULES/SUBWORKFLOWS
 ========================================================================================
 */
-//include { PREPARE_REFERENCES        }   from '../subworkflows/local/prepare_references'
-include { FASTQC                    }   from '../modules/nf-core/modules/fastqc/main'
-//include { TRIM_GALORE               }   from '../modules/local/trim_galore/main'
-//include { MULTIQC_ONRAW; MULTIQC    }   from '../modules/local/multiqc/main'
+include { PREPARE_REFERENCES        }   from '../subworkflows/local/prepare_references'
+include { MULTIQC_ONRAW; MULTIQC    }   from '../modules/local/multiqc/main'
 //include { GUNZIP_MIRDEEPIN          }   from '../modules/local/gzip_mirdeepin/main'
 //include { MIRDEEP                   }   from '../subworkflows/local/mirdeep'
 /*
@@ -45,7 +43,9 @@ include { FASTQC                    }   from '../modules/nf-core/modules/fastqc/
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
 ========================================================================================
 */
-include { INPUT_CHECK           }   from '../subworkflows/local/input_check'
+include { INPUT_CHECK                   }   from '../subworkflows/local/input_check'
+include { FASTQC                        }   from '../modules/nf-core/modules/fastqc/main'
+include { TRIMGALORE                    }   from '../modules/nf-core/modules/trimgalore/main'
 //include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 /*
 ========================================================================================
@@ -68,31 +68,29 @@ workflow MIRNASEQ {
     )
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
     reads       = INPUT_CHECK.out.reads
+
     //
     // SUBWORKFLOW: PREPARE REFERENCE FILES (GENOME & MIRBASE)
     //
-//    PREPARE_REFERENCES ()
-//    ch_genome_edited    = PREPARE_REFERENCES.out.genome
-//    ch_genome_nowhite   = PREPARE_REFERENCES.out.genome_nowhite
-//    ch_genome_indices   = PREPARE_REFERENCES.out.indices
-//    ch_mirbase_mature   = PREPARE_REFERENCES.out.mature
-//    ch_mirbase_hairpin  = PREPARE_REFERENCES.out.hairpin
-//    ch_mirbase_related  = PREPARE_REFERENCES.out.related
-    
+    PREPARE_REFERENCES ()
+    ch_genome_edited    = PREPARE_REFERENCES.out.genome
+    ch_genome_nowhite   = PREPARE_REFERENCES.out.genome_nowhite
+    ch_genome_indices   = PREPARE_REFERENCES.out.indices
+    ch_mirbase_mature   = PREPARE_REFERENCES.out.mature
+    ch_mirbase_hairpin  = PREPARE_REFERENCES.out.hairpin
+    ch_mirbase_related  = PREPARE_REFERENCES.out.related
 
     //
     // MODULE: Run FastQC
     //
     FASTQC ( reads )  
-
-/*
-    MULTIQC_ONRAW ( FASTQC.out.reports.collect() )
+//    MULTIQC_ONRAW ( FASTQC.out.reports.collect() ) // Add new fastqc out files
 
     //
     // MODULE: Run TRIM GALORE
     //
-    TRIM_GALORE ( raw_input )
-    
+    TRIMGALORE ( reads )
+/*    
     //
     // MODULE: Run MULTIQC
     //
