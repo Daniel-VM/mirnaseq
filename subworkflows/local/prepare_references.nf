@@ -4,13 +4,20 @@
 
 /*
 ========================================================================================
-    IMPORT LOCAL or NF-CORE MODULES/SUBWORKFLOWS
+    IMPORT LOCAL MODULES/SUBWORKFLOWS
 ========================================================================================
 */
-include { GUNZIP as GUNZIP_FASTA }      from '../../modules/nf-core/modules/gunzip/main'
-include { GUNZIP as GUNZIP_MATURE }     from '../../modules/nf-core/modules/gunzip/main'
-include { GUNZIP as GUNZIP_HAIRPIN }    from '../../modules/nf-core/modules/gunzip/main'
-include { PREPARE_GENOME; INDICES; PREPARE_MICRORNAS; PREPARE_MIRBASE_TARGET; PREPARE_MIRBASE_RELATED }  from '../../modules/local/prepare_references/main'
+include { GUNZIP as GUNZIP_FASTA    } from '../../modules/nf-core/gunzip/main'
+include { GUNZIP as GUNZIP_MATURE   } from '../../modules/nf-core/gunzip/main'
+include { GUNZIP as GUNZIP_HAIRPIN  } from '../../modules/nf-core/gunzip/main'
+include { PREPARE_GENOME; PREPARE_MICRORNAS; PREPARE_MIRBASE_TARGET; PREPARE_MIRBASE_RELATED }  from '../../modules/local/prepare_references/main'
+
+/*
+========================================================================================
+    IMPORT NF-CORE MODULES/SUBWORKFLOWS
+========================================================================================
+*/
+include { BOWTIE_BUILD              } from '../../modules/nf-core/bowtie/build/main'
 
 /*
 ========================================================================================
@@ -48,8 +55,8 @@ workflow PREPARE_REFERENCES {
     if ( params.bt_indices ) {
         ch_genome_indices = Channel.fromPath( params.bt_indices )
     } else {
-        INDICES ( ch_genome_edited )
-        ch_genome_indices = INDICES.out.indices
+        BOWTIE_BUILD ( ch_genome_edited )
+        ch_genome_indices = BOWTIE_BUILD.out.indices
     }
    
     // parsing  miRBase references (mature & hairpin)
