@@ -1,6 +1,10 @@
 process MIRDEEP2 {
-    label 'process_medium'
+    label 'process_high'
+
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null )
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mirdeep2:2.0.1.2--0' :
+        'quay.io/biocontainers/mirdeep2:2.0.1.2--0' }"
 
     input:
     file collapsed_reads
@@ -51,7 +55,11 @@ process MIRDEEP2 {
 
 process NOVEL_MIRNAS {
     label 'prcoess_low'
+
     conda ( params.enable_conda ? "conda-forge::sed=4.8 bioconda::mirdeep2=2.0.1.2" : null)
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mirdeep2:2.0.1.2--0' :
+        'quay.io/biocontainers/mirdeep2:2.0.1.2--0' }"
 
     input:
     file mirdeep_tab

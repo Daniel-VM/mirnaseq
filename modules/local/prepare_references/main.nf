@@ -1,8 +1,10 @@
-// Parsing reference genome
 process PREPARE_GENOME {
     label 'process_low'
     conda (params.enable_conda ? "conda-forge::sed=4.7" : null)
-
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/sed:4.7.0' :
+        'quay.io/biocontainers/sed:4.7.0' }"
+        
     input:
     file genome_fasta
 
@@ -25,10 +27,13 @@ process PREPARE_GENOME {
     """
 }
 
-// Build indices with bowtie
 process INDICES {
-    label 'process_medium'
+    label 'process_high'
+    
     conda (params.enable_conda ? "bioconda::bowtie=1.3.1" : null)
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/bowtie:1.3.1--py310h4070885_4' :
+        'quay.io/biocontainers/bowtie:1.3.1--py310h4070885_4' }"
 
     input:
     file genome_fasta
@@ -50,10 +55,13 @@ process INDICES {
     """
 }
 
-// Process miRBase references
 process PREPARE_MICRORNAS {
     label 'process_low'
+    
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mirdeep2:2.0.1.2--0' :
+        'quay.io/biocontainers/mirdeep2:2.0.1.2--0' }"
 
     input:
     file mature_fasta
@@ -74,10 +82,13 @@ process PREPARE_MICRORNAS {
     """  
 }
 
-// Process and filter miRBase references based on target specie/s. 
 process PREPARE_MIRBASE_TARGET {
     label 'process_low'
+
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mirdeep2:2.0.1.2--0' :
+        'quay.io/biocontainers/mirdeep2:2.0.1.2--0' }"
 
     input:
     file mature_fasta
@@ -104,11 +115,14 @@ process PREPARE_MIRBASE_TARGET {
     """
 }
 
-// Get mature related species from miRBase mature sequences
 process PREPARE_MIRBASE_RELATED {
     label 'process_low'
+    
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)
-
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mirdeep2:2.0.1.2--0' :
+        'quay.io/biocontainers/mirdeep2:2.0.1.2--0' }"
+    
     input:
     file mature_fasta
     val(related_sp)

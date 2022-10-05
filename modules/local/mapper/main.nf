@@ -1,7 +1,10 @@
 process MAPPER {
-    label 'process_medium'
+    label 'process_high'
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null)
-
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mirdeep2:2.0.1.2--0' :
+        'quay.io/biocontainers/mirdeep2:2.0.1.2--0' }"
+        
     input:
     file input_list
     file genome_indices

@@ -1,7 +1,11 @@
 process QUANTIFY_THEMALL {
-    label 'process_low'
+    label 'process_medium'
     label 'process_long'
+
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null )
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mirdeep2:2.0.1.2--0' :
+        'quay.io/biocontainers/mirdeep2:2.0.1.2--0' }"
 
     input:
     file maure_ref_plusDenovo

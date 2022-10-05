@@ -73,7 +73,6 @@ workflow MIRNASEQ {
     //
     // SUBWORKFLOW: PREPARE REFERENCE FILES (GENOME & MIRBASE)
     //
-/*
     PREPARE_REFERENCES ()
     ch_genome_edited    = PREPARE_REFERENCES.out.genome
     ch_genome_nowhite   = PREPARE_REFERENCES.out.genome_nowhite
@@ -81,7 +80,7 @@ workflow MIRNASEQ {
     ch_mirbase_mature   = PREPARE_REFERENCES.out.mature
     ch_mirbase_hairpin  = PREPARE_REFERENCES.out.hairpin
     ch_mirbase_related  = PREPARE_REFERENCES.out.related
-*/
+/*
     //
     // MODULE: Run FastQC
     //
@@ -106,11 +105,14 @@ workflow MIRNASEQ {
     MULTIQC ( ch_multiqc_files.collect() )
 
     //
-    // SUBWORKFLOW: microRNA analysis
+    // MODULE: PREPARE READS FOR MINRASEQ ANALYSIS
     //
     GUNZIP_MIRDEEPIN ( TRIMGALORE.out.reads )
     ch_mirdeep_input = GUNZIP_MIRDEEPIN.out.unzipped_reads
-/*
+
+    //
+    // SUBWORKFLOW: MIRNASEQ ANALYSIS WITH MIRDEEP
+    //
     MIRDEEP ( 
         ch_mirdeep_input,
         ch_genome_indices,
