@@ -1,17 +1,17 @@
-process BOWTIE_BUILD {
+process BOWTIE_BUILD_CUSTOM {
     tag "$fasta"
-    label 'process_high'
+    label 'process_high_memory'
 
-    conda (params.enable_conda ? 'bioconda::bowtie=1.3.0' : null)
+    conda (params.enable_conda ? 'bioconda::bowtie=1.3.1' : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bowtie:1.3.0--py38hed8969a_1' :
-        'quay.io/biocontainers/bowtie:1.3.0--py38hed8969a_1' }"
+        'https://depot.galaxyproject.org/singularity/bowtie:1.3.1--py39hd400a0c_2' :
+        'quay.io/biocontainers/bowtie:1.3.1--py39hd400a0c_2' }"
 
     input:
     path fasta
 
     output:
-    path 'bowtie'       , emit: index
+    path '*.ebwt'       , emit: index
     path "versions.yml" , emit: versions
 
     when:
@@ -20,8 +20,7 @@ process BOWTIE_BUILD {
     script:
     def args = task.ext.args ?: ''
     """
-    mkdir bowtie
-    bowtie-build --threads $task.cpus $fasta bowtie/${fasta.baseName}
+    bowtie-build --threads $task.cpus $fasta genome
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         bowtie: \$(echo \$(bowtie --version 2>&1) | sed 's/^.*bowtie-align-s version //; s/ .*\$//')

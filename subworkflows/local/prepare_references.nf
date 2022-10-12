@@ -11,13 +11,13 @@ include { GUNZIP as GUNZIP_FASTA    } from '../../modules/nf-core/gunzip/main'
 include { GUNZIP as GUNZIP_MATURE   } from '../../modules/nf-core/gunzip/main'
 include { GUNZIP as GUNZIP_HAIRPIN  } from '../../modules/nf-core/gunzip/main'
 include { PREPARE_GENOME; PREPARE_MICRORNAS; PREPARE_MIRBASE_TARGET; PREPARE_MIRBASE_RELATED }  from '../../modules/local/prepare_references/main'
+include { BOWTIE_BUILD_CUSTOM       } from '../../modules/local/bowtie_build_custom/main'
 
 /*
 ========================================================================================
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
 ========================================================================================
 */
-include { BOWTIE_BUILD              } from '../../modules/nf-core/bowtie/build/main'
 
 /*
 ========================================================================================
@@ -48,17 +48,22 @@ workflow PREPARE_REFERENCES {
 
     // Parsing reference genome
     PREPARE_GENOME( ch_genome )
-    ch_genome_edited  = PREPARE_GENOME.out.edited
-    ch_genome_nowhite = PREPARE_GENOME.out.nowhite
+    ch_genome_edited    = PREPARE_GENOME.out.edited
+    ch_genome_nowhite   = PREPARE_GENOME.out.nowhite
+    ch_versions         = ch_versions.mix( PREPARE_GENOME.out.versions ) 
+
     
     // Get indices if required
+// <--! IVI TODO: bowtie-build takes so long to be completed in HPC. Seems that some parameters should be adjusted -->
     if ( params.bt_indices ) {
         ch_genome_indices = Channel.fromPath( params.bt_indices )
     } else {
-        BOWTIE_BUILD ( ch_genome_edited )
-        ch_genome_indices = BOWTIE_BUILD.out.indices
+        BOWTIE_BUILD_CUSTOM ( ch_genome_edited )
+        ch_genome_indices   = BOWTIE_BUILD_CUSTOM.out.index
+        ch_versions         = ch_versions.mix( BOWTIE_BUILD_CUSTOM.out.versions ) 
     }
    
+
     // parsing  miRBase references (mature & hairpin)
     if (params.target_sp){
         ch_target_sp = Channel.from(params.target_sp)
@@ -89,10 +94,6 @@ workflow PREPARE_REFERENCES {
     } else {
         ch_related_out = Channel.from('none')
     }
-
-    // combine versions
-    ch_versions = ch_versions.mix( PREPARE_GENOME.out.versions ) 
-
 
     emit:
     genome          = ch_genome_edited

@@ -17,7 +17,7 @@ process MAPPER {
 
     script:
     def args = task.ext.args ?: ''
-    index_baseName = genome_indices.toString().tokenize(' ')[0].tokenize('.')[0]
+    def index_baseName = genome_indices.toString().tokenize(' ')[0].tokenize('.')[0]
 
     """
     mapper.pl $input_list \\

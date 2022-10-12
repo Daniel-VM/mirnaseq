@@ -35,19 +35,19 @@ if ( !params.hairpin ) { exit 1, "Hairpin miRNA fasta file not found: ${params.h
 ========================================================================================
 */
 include { PREPARE_REFERENCES            } from '../subworkflows/local/prepare_references'
-include { GUNZIP_MIRDEEPIN              } from '../modules/local/gzip_mirdeepin/main'
-//include { MIRDEEP                   }   from '../subworkflows/local/mirdeep'
+include { MIRDEEP                       }   from '../subworkflows/local/mirdeep'
 /*
 ========================================================================================
     IMPORT NF-CORE MODULES/SUBWORKFLOWS
 ========================================================================================
 */
 include { INPUT_CHECK                   } from '../subworkflows/local/input_check'
-include { FASTQC                        } from '../modules/nf-core/modules/fastqc/main'
-include { FASTQC as FASTQC_ONTRIM       } from '../modules/nf-core/modules/fastqc/main'
-include { MULTIQC                       } from '../modules/nf-core/modules/multiqc/main'
-include { TRIMGALORE                    } from '../modules/nf-core/modules/trimgalore/main'
-//include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
+include { FASTQC                        } from '../modules/nf-core/fastqc/main'
+include { FASTQC as FASTQC_ONTRIM       } from '../modules/nf-core/fastqc/main'
+include { MULTIQC                       } from '../modules/nf-core/multiqc/main'
+include { TRIMGALORE                    } from '../modules/nf-core/trimgalore/main'
+include { CUSTOM_DUMPSOFTWAREVERSIONS   } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+
 /*
 ========================================================================================
     RUN MAIN WORKFLOW
@@ -57,17 +57,19 @@ include { TRIMGALORE                    } from '../modules/nf-core/modules/trimg
 // def multiqc_report = []
 
 workflow MIRNASEQ {
+
     ch_versions         = Channel.empty()
     ch_multiqc_files    = Channel.empty()
-    ch_mirdeep_input    = Channel.empty()
-
+    ch_multiqc_files    = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
+    ch_multiqc_files    = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
+    
     //
     // SUBWORKFLOW: Read samplesheet, validate and stage input files
     //
     INPUT_CHECK (
         raw_input
-    )
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+        )
+    ch_versions = ch_versions.mix( INPUT_CHECK.out.versions )
     reads       = INPUT_CHECK.out.reads
 
     //
@@ -80,60 +82,63 @@ workflow MIRNASEQ {
     ch_mirbase_mature   = PREPARE_REFERENCES.out.mature
     ch_mirbase_hairpin  = PREPARE_REFERENCES.out.hairpin
     ch_mirbase_related  = PREPARE_REFERENCES.out.related
-/*
+    ch_versions         = ch_versions.mix(PREPARE_REFERENCES.out.versions)
+
     //
     // MODULE: Run FastQC
     //
-    FASTQC ( reads )
+    FASTQC (
+        reads
+        )
+    ch_versions = ch_versions.mix(FASTQC.out.versions)
     
     //
-    // MODULE: Run TRIM GALORE
+    // MODULE: Adapter trimming with TRIMGALORE
     //
-    TRIMGALORE ( reads )
-    FASTQC_ONTRIM( TRIMGALORE.out.reads )
+    TRIMGALORE ( 
+        reads
+        )
+    ch_multiqc_files    = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{it[1]})
+    ch_multiqc_files    = ch_multiqc_files.mix(TRIMGALORE.out.html.collect{it[1]})
+    ch_versions         = ch_versions.mix(TRIMGALORE.out.versions)
+
+    //
+    // MODULE: Reads quality control on trimmed reads
+    //
+    FASTQC_ONTRIM( 
+        TRIMGALORE.out.reads
+        )
+    ch_multiqc_files    = ch_multiqc_files.mix(FASTQC_ONTRIM.out.html.collect{it[1]})
+    ch_multiqc_files    = ch_multiqc_files.mix(FASTQC_ONTRIM.out.zip.collect{it[1]})
     
     //
     // MODULE: Run MULTIQC
     //
-    ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
-    ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC_ONTRIM.out.html.collect{it[1]})
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC_ONTRIM.out.zip.collect{it[1]})
-    ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{it[1]})
-    ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.html.collect{it[1]})
+    MULTIQC ( 
+        ch_multiqc_files.collect()
+        )
+    ch_versions = ch_versions.mix( MULTIQC.out.versions )
     
-    MULTIQC ( ch_multiqc_files.collect() )
-
-    //
-    // MODULE: PREPARE READS FOR MINRASEQ ANALYSIS
-    //
-    GUNZIP_MIRDEEPIN ( TRIMGALORE.out.reads )
-    ch_mirdeep_input = GUNZIP_MIRDEEPIN.out.unzipped_reads
-
     //
     // SUBWORKFLOW: MIRNASEQ ANALYSIS WITH MIRDEEP
     //
     MIRDEEP ( 
-        ch_mirdeep_input,
-        ch_genome_indices,
-        ch_genome_nowhite,
-        ch_mirbase_mature,
-        ch_mirbase_related,
-        ch_mirbase_hairpin
+        TRIMGALORE.out.reads,   // [val, path]
+        ch_genome_indices,      // [path]
+        ch_genome_nowhite,      // [path]
+        ch_mirbase_mature,      // [path]
+        ch_mirbase_related,     // [path]
+        ch_mirbase_hairpin      // [path]
         )
-
-    //
-    // Program Versions
-    //
-    ch_versions = ch_versions.mix(PREPARE_REFERENCES.out.versions)
-    ch_versions = ch_versions.mix(FASTQC.out.versions)
-    ch_versions = ch_versions.mix(MULTIQC.out.versions)
     ch_versions = ch_versions.mix(MIRDEEP.out.versions)
 
+    //
+    // MODULE: Unify program versions
+    //
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
         )
-*/
+
 }
 /*
 ========================================================================================
