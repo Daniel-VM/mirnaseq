@@ -52,17 +52,6 @@ workflow PREPARE_REFERENCES {
     ch_genome_nowhite   = PREPARE_GENOME.out.nowhite
     ch_versions         = ch_versions.mix( PREPARE_GENOME.out.versions ) 
 
-    
-    // Get indices if required
-// <--! IVI TODO: bowtie-build takes so long to be completed in HPC. Seems that some parameters should be adjusted -->
-    if ( params.bt_indices ) {
-        ch_genome_indices = Channel.fromPath( params.bt_indices )
-    } else {
-        BOWTIE_BUILD_CUSTOM ( ch_genome_edited )
-        ch_genome_indices   = BOWTIE_BUILD_CUSTOM.out.index
-        ch_versions         = ch_versions.mix( BOWTIE_BUILD_CUSTOM.out.versions ) 
-    }
-   
 
     // parsing  miRBase references (mature & hairpin)
     if (params.target_sp){
@@ -93,6 +82,16 @@ workflow PREPARE_REFERENCES {
     
     } else {
         ch_related_out = Channel.from('none')
+    }
+
+    // Get indices if required
+// <--! IVI TODO: bowtie-build takes so long to be completed in HPC. Seems that some parameters should be adjusted -->
+    if ( params.bt_indices ) {
+        ch_genome_indices = Channel.fromPath( params.bt_indices )
+    } else {
+        BOWTIE_BUILD_CUSTOM ( ch_genome_edited )
+        ch_genome_indices   = BOWTIE_BUILD_CUSTOM.out.index
+        ch_versions         = ch_versions.mix( BOWTIE_BUILD_CUSTOM.out.versions ) 
     }
 
     emit:

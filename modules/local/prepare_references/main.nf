@@ -27,33 +27,6 @@ process PREPARE_GENOME {
     """
 }
 
-process INDICES {
-    label 'process_high'
-    
-    conda (params.enable_conda ? "bioconda::bowtie=1.3.1" : null)
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/bowtie:1.3.1--py310h4070885_4' :
-        'quay.io/biocontainers/bowtie:1.3.1--py310h4070885_4' }"
-
-    input:
-    file genome_fasta
-
-    output:
-    path ('*.ebwt')         , emit: indices
-    path ("versions.yml")   , emit: versions
-
-    script:
-    """
-    # build bowtie indices
-    bowtie-build $genome_fasta genome --threads ${task.cpus}
-
-    # version
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bowtie: \$( bowtie --version | head -n 1 | awk '{print \$NF}' )
-    END_VERSIONS
-    """
-}
 
 process PREPARE_MICRORNAS {
     label 'process_low'

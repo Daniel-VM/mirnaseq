@@ -2,21 +2,34 @@
     "name": "mirnaseq",
     "homePage": "https://github.com/Daniel-VM/mirnaseq",
     "repos": {
-        "nf-core/modules": {
-            "custom/dumpsoftwareversions": {
-                "git_sha": "20d8250d9f39ddb05dfb437603aaf99b5c0b2b41"
-            },
-            "fastqc": {
-                "git_sha": "9d0cad583b9a71a6509b754fdf589cbfbed08961"
-            },
-            "gunzip": {
-                "git_sha": "90aef30f432332bdf0ce9f4b9004aa5d5c4960bb"
-            },
-            "multiqc": {
-                "git_sha": "20d8250d9f39ddb05dfb437603aaf99b5c0b2b41"
-            },
-            "trimgalore": {
-                "git_sha": "85ec13ff1fc2196c5a507ea497de468101baabed"
+        "https://github.com/nf-core/modules.git": {
+            "modules": {
+                "nf-core": {
+                    "bowtie/build": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "custom/dumpsoftwareversions": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "fastqc": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "gunzip": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "multiqc": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "trimgalore": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    }
+                }
             }
         }
     }

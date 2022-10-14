@@ -2,13 +2,14 @@
 
 # Load or install if needed 
 if (!require("dplyr")){
-  install.packages("dplyr", dependencies=TRUE, repos='http://cloud.r-project.org/')
+  install.packages("dplyr", dependencies=TRUE, repos='http://cloud.r-project.org/' )
   library("dplyr")
 }
 if (!require("stringr")){
-  install.packages("stringr", dependencies=TRUE, repos='http://cloud.r-project.org/')
+  install.packages("stringr", dependencies=TRUE, repos='http://cloud.r-project.org/' )
   library("stringr")
 }
+
 # Command line arguments & get input path of current process
 args    <- commandArgs(trailingOnly = TRUE)  %>% str_sort(., numeric = TRUE)
 input   <- as.character(args[1:length(args)])

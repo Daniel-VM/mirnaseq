@@ -7,11 +7,18 @@
     IMPORT LOCAL MODULES
 ========================================================================================
 */
-include { GUNZIP as GUNZIP_FASTA    } from '../../modules/nf-core/gunzip/main'
 include { CONFIG_FILE               } from '../../modules/local/config_file/main'
 include { MAPPER                    } from '../../modules/local/mapper/main'
 include { MIRDEEP2; NOVEL_MIRNAS    } from '../../modules/local/mirdeep2/main'
 include { QUANTIFY_THEMALL          } from '../../modules/local/quantify_themall/main'
+
+/*
+========================================================================================
+    IMPORT NF-CORE MODULES
+========================================================================================
+*/
+include { GUNZIP    } from '../../modules/nf-core/gunzip/main'
+
 /*
 ========================================================================================
     RUN MAIN SUBWORKFLOW
@@ -19,7 +26,7 @@ include { QUANTIFY_THEMALL          } from '../../modules/local/quantify_themall
 */
 workflow MIRDEEP {
     take:
-    ch_mirdeep_input
+    trim_reads
     ch_genome_indices
     ch_genome_nowhite
     ch_mirbase_mature
@@ -28,6 +35,12 @@ workflow MIRDEEP {
 
     main:
     ch_versions = Channel.empty()
+
+    //
+    // MODULE: PREPARE READS FOR MINRASEQ ANALYSIS
+    //
+    GUNZIP ( trim_reads )
+    ch_mirdeep_input = GUNZIP.out.gunzip
 
     // MODULE: CONFIG FILE - build a miRDeep2 configuration file
     CONFIG_FILE ( 
