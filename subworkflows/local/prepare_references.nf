@@ -11,7 +11,6 @@ include { GUNZIP as GUNZIP_FASTA    } from '../../modules/nf-core/gunzip/main'
 include { GUNZIP as GUNZIP_MATURE   } from '../../modules/nf-core/gunzip/main'
 include { GUNZIP as GUNZIP_HAIRPIN  } from '../../modules/nf-core/gunzip/main'
 include { PREPARE_GENOME; PREPARE_MICRORNAS; PREPARE_MIRBASE_TARGET; PREPARE_MIRBASE_RELATED }  from '../../modules/local/prepare_references/main'
-include { BOWTIE_BUILD_CUSTOM       } from '../../modules/local/bowtie_build_custom/main'
 
 /*
 ========================================================================================
@@ -63,7 +62,7 @@ workflow PREPARE_REFERENCES {
             )
         ch_mature_out   = PREPARE_MIRBASE_TARGET.out.mature
         ch_hairpin_out  = PREPARE_MIRBASE_TARGET.out.hairpin
-        ch_versions = ch_versions.mix( PREPARE_MIRBASE_TARGET.out.versions )
+        ch_versions     = ch_versions.mix( PREPARE_MIRBASE_TARGET.out.versions )
     } else {
         PREPARE_MICRORNAS(ch_mature, ch_hairpin)
         ch_mature_out    = PREPARE_MICRORNAS.out.mature
@@ -84,20 +83,9 @@ workflow PREPARE_REFERENCES {
         ch_related_out = Channel.from('none')
     }
 
-    // Get indices if required
-// <--! IVI TODO: bowtie-build takes so long to be completed in HPC. Seems that some parameters should be adjusted -->
-    if ( params.bt_indices ) {
-        ch_genome_indices = Channel.fromPath( params.bt_indices )
-    } else {
-        BOWTIE_BUILD_CUSTOM ( ch_genome_edited )
-        ch_genome_indices   = BOWTIE_BUILD_CUSTOM.out.index
-        ch_versions         = ch_versions.mix( BOWTIE_BUILD_CUSTOM.out.versions ) 
-    }
-
     emit:
-    genome          = ch_genome_edited
+    genome_edited   = ch_genome_edited
     genome_nowhite  = ch_genome_nowhite
-    indices         = ch_genome_indices
     mature          = ch_mature_out
     hairpin         = ch_hairpin_out
     related         = ch_related_out
