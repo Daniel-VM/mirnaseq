@@ -12,6 +12,7 @@ process MAPPER {
     output:
     path ('*.fa')           , emit: collapsed_reads
     path ('*.arf')          , emit: reads_vs_genome
+    path ('stdout.log')     , emit: stats
     path ("*log*")          , emit: logs
     path ('versions.yml')   , emit: versions
 
@@ -25,7 +26,7 @@ process MAPPER {
 	-o ${task.cpus} \\
 	-s reads_collapsed.fa \\
 	-p $index_baseName \\
-	-t reads_collapsed_vs_genome.arf > stdout.log
+	-t reads_collapsed_vs_genome.arf &> stdout.log
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

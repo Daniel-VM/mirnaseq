@@ -1,14 +1,14 @@
-#!/bin/python3
+#!/usr/bin/env python3
 #
 #   readsProcessing_report.py
 #
-
 import argparse
 import os
-import pandas as pd
 import re
 import collections
+import pandas as pd
 from itertools import chain
+from radial_plot import *
 
 
 # ===============================================
@@ -93,3 +93,6 @@ mapper_final = pd.merge(df_config,df_mapper, on=['sample_code']) # required to m
 # ===============================
 df_final = pd.merge(df_qcTrim, mapper_final, on=['Sample'])
 df_final.to_csv('merged.csv',sep=',')
+
+# Create a radial piechart. Output is saved as ./percent_reads.png
+radial_pie(df = df_final)
