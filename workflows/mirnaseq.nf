@@ -77,6 +77,7 @@ workflow MIRNASEQ {
     //
     // SUBWORKFLOW: PREPARE REFERENCE FILES (GENOME & MIRBASE)
     //
+/*
     PREPARE_REFERENCES ()
     ch_genome_edited    = PREPARE_REFERENCES.out.genome_edited
     ch_genome_nowhite   = PREPARE_REFERENCES.out.genome_nowhite
@@ -98,7 +99,7 @@ workflow MIRNASEQ {
         ch_genome_indices   = BOWTIE_BUILD_CUSTOM.out.index
         ch_versions         = ch_versions.mix( BOWTIE_BUILD_CUSTOM.out.versions ) 
     }
-
+*/
     //
     // MODULE: Run FastQC
     //
@@ -125,7 +126,7 @@ workflow MIRNASEQ {
         ch_multiqc_files.collect()
         )
     ch_versions = ch_versions.mix( MULTIQC.out.versions )
-    
+/*    
     //
     // SUBWORKFLOW: MIRNASEQ ANALYSIS WITH MIRDEEP
     //
@@ -147,13 +148,14 @@ workflow MIRNASEQ {
         MIRDEEP.out.samples,
         MIRDEEP.out.mapper_stats
     )
+
     //
     // MODULE: Unify program versions
     //
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
         )
-
+*/
 }
 /*
 ========================================================================================
