@@ -36,7 +36,8 @@ if ( !params.hairpin ) { exit 1, "Hairpin miRNA fasta file not found: ${params.h
 */
 include { PREPARE_REFERENCES            } from '../subworkflows/local/prepare_references'
 include { BOWTIE_BUILD_CUSTOM           } from '../modules/local/bowtie_build_custom/main'
-include { MIRDEEP                       }   from '../subworkflows/local/mirdeep'
+include { MIRDEEP                       } from '../subworkflows/local/mirdeep'
+include { STATS_SUMMARY                 } from '../modules/local/stats_summary/main'
 
 /*
 ========================================================================================
@@ -138,6 +139,14 @@ workflow MIRNASEQ {
         )
     ch_versions = ch_versions.mix(MIRDEEP.out.versions)
 
+    //
+    // MODULE: Unify program versions
+    //
+    STATS_SUMMARY(
+        MULTIQC.out.data,
+        MIRDEEP.out.samples,
+        MIRDEEP.out.mapper_stats
+    )
     //
     // MODULE: Unify program versions
     //

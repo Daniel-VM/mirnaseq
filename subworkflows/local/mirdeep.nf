@@ -56,6 +56,7 @@ workflow MIRDEEP {
         )
     ch_mapper_collapsed = MAPPER.out.collapsed_reads
     ch_mapper_arf       = MAPPER.out.reads_vs_genome
+    ch_mapperStats      = MAPPER.out.stats
 
     // MODULE: miRNAseq analysis with MIRDEEP2
     MIRDEEP2 (
@@ -89,4 +90,6 @@ workflow MIRDEEP {
 
     emit:
     versions            = ch_versions
+    samples             = reads_list
+    mapper_stats        = ch_mapperStats
 }
