@@ -1,11 +1,9 @@
 .nextflow*
 work/
-data/
 results/
 .DS_Store
-testing/
-testing*
 *.pyc
-*results.tar.gz
 sjob/
 nextflow_*.config
+plugins/
+tmp
