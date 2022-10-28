@@ -92,7 +92,7 @@ mapper_final = pd.merge(df_config,df_mapper, on=['sample_code']) # required to m
 # OUTPUT SUMMARIZING ALL METIRCS
 # ===============================
 df_final = pd.merge(df_qcTrim, mapper_final, on=['Sample'])
-df_final.to_csv('merged.csv',sep=',')
+df_final.to_csv('summary_stats.csv',sep=',')
 
 # Create a radial piechart. Output is saved as ./percent_reads.png
 radial_pie(df = df_final)

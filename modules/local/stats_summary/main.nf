@@ -1,5 +1,5 @@
 process STATS_SUMMARY {
-    label 'process_medium'
+    label 'process_low'
     conda (params.enable_conda ? 'conda-forge::python=3.10.0 conda-forge::pandas=1.5.1 conda-forge::matplotlib=3.6.1 conda-forge::more-itertools=8.12.0' : null )
     
     input:

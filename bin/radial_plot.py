@@ -66,18 +66,12 @@ def radial_pie(df):
     
     df_mean = [
         pd.to_numeric(df['r_processed'], errors='coerce').mean(),
-        pd.to_numeric(df['r_written'], errors='coerce').mean(),
+        pd.to_numeric(df['Total Sequences'], errors='coerce').mean(),
         pd.to_numeric(df['unmapped'], errors='coerce').mean(),
         pd.to_numeric(df['mapped'], errors='coerce').mean()
         ]
     # Compute percents over the mean
     df_percent = [ i/df_mean[0]*100 for i in df_mean ]
-    print(type(df['r_processed']))
-    print(type(df['r_written']))
-    print(type(df['unmapped']))
-    print(type(df['mapped']))
-    print(df_mean)
-    print(df_percent)
 
     # Set up graph parameters and plot it: sourced from [https://stackoverflow.com/questions/49729748/create-a-circular-barplot-in-python]
     cols = [
