@@ -53,6 +53,7 @@ workflow PREPARE_REFERENCES {
 
 
     // parsing  miRBase references (mature & hairpin)
+// <!TODO IVI: PREPARE_MICRORNAS may introduce sequence-alphabet errors. this module can be removed>
     if (params.target_sp){
         ch_target_sp = Channel.from(params.target_sp)
         PREPARE_MIRBASE_TARGET (

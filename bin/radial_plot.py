@@ -31,7 +31,7 @@ def plot_params(df_plot):
     #number of data points
     n = len(df_plot)
     #find max value for full ring
-    k = 10 ** int(log10(max(df_plot)))
+    k = 9 ** int(log10(max(df_plot)))
     m = k * (1 + max(df_plot) // k)
 
     #radius of donut chart

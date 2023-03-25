@@ -1,6 +1,5 @@
 process MIRDEEP2 {
-    label 'process_high'
-    label 'process_long'
+    label 'process_highLong'
 
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null )
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

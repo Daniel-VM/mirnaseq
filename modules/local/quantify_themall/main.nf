@@ -1,5 +1,5 @@
 process QUANTIFY_THEMALL {
-    label 'process_medium'
+    label 'process_highLong'
 
     conda (params.enable_conda ? "bioconda::mirdeep2=2.0.1.2" : null )
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -17,9 +17,12 @@ process QUANTIFY_THEMALL {
     path ('versions.yml')   , emit: versions
     
     script:
+    def args = task.ext.args ?: ''
     """
     DATE=`date +"%Y%m%d_%H%M"`
-    quantifier.pl -p $hairpin_ref_plusDenovo \\
+    quantifier.pl \\
+        $args \\
+        -p $hairpin_ref_plusDenovo \\
         -m $maure_ref_plusDenovo \\
         -r $collapsed_reads \\
         -y \$DATE
