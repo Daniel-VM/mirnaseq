@@ -26,25 +26,24 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 3. Download the pipeline
     ```console
-    git clone -b dev https://github.com/Daniel-VM/mirnaseq.git
+    git clone -b master https://github.com/Daniel-VM/mirnaseq.git
     ```
 
-4. Test it on a minimal dataset with a single command:
-    ```console
-    nextflow run main.nf -profile test,conda 
-    ```
 
-    > * The pipeline comes with config profile called `conda` which instruct the pipeline to use the named tool for software management. For example, `-profile test,conda`.
-
-5. Start running your own analysis!
+4. Start running your own analysis!
 
      ```console
     nextflow run main.nf -profile conda \
-                        --input 'path_to/*.fastq.gz' \
-                        --genome GRCh38 \
+                        --input 'path_to/sample_sheet.csv' \
+                        --genome 'GRCh38' \
                         --target_sp hsa 
     ```
 > **NB:** The parameter *-target_sp* attemps to process human miRNAs as the main target specie for the analysis with miRDeep2. 
+## Sample's input format
+| sample | fastq_1 | fastq_2 | paired |
+| sample1_name | path_to/sample1_name_R001.fastq.gz | | false |
+| sample2_name | path_to/sample2_name_R001.fastq.gz | | false |
+| sample3_name | path_to/sample3_name_R001.fastq.gz | | false |
 
 ## Documentation
 The *mirnaseq* pipeline comes with documentation about the pipeline [usage](https://github.com/Daniel-VM/mirnaseq/blob/dev/docs/usage.md), [parameters](https://github.com/Daniel-VM/mirnaseq/blob/dev/docs/parameters.md) and [output](https://github.com/Daniel-VM/mirnaseq/blob/dev/docs/output.md).
