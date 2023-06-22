@@ -4,7 +4,7 @@
 ========================================================================================
 */
 // Check mandatory parameters
-if ( params.input ) { raw_input = Channel.fromPath( params.input ) } else { exit 1, 'Input fastqc files not defined!' }
+if ( params.input ) { raw_input = file( params.input ) } else { exit 1, 'Input fastq files not defined!' }
 
 /*
 ========================================================================================
@@ -45,6 +45,7 @@ include { STATS_SUMMARY                 } from '../modules/local/stats_summary/m
 ========================================================================================
 */
 include { INPUT_CHECK                   } from '../subworkflows/local/input_check'
+include { CAT_FASTQ                     } from '../modules/nf-core/cat/fastq/main'
 include { FASTQC                        } from '../modules/nf-core/fastqc/main'
 include { TRIMGALORE                    } from '../modules/nf-core/trimgalore/main'
 include { MULTIQC                       } from '../modules/nf-core/multiqc/main'
@@ -71,9 +72,59 @@ workflow MIRNASEQ {
     INPUT_CHECK (
         raw_input
         )
+        .reads
+        .dump(tag: 'group')
+        .branch {
+            meta, fastq ->
+                single  : fastq.size() == 1
+                    return [ meta, fastq.flatten() ]
+                multiple: fastq.size() > 1
+                    return [ meta, fastq.flatten() ]
+        }
+        .set { ch_fastq }    
     ch_versions = ch_versions.mix( INPUT_CHECK.out.versions )
-    reads       = INPUT_CHECK.out.reads
 
+
+    //
+    // MODULE: Concatenate FastQ files from same sample if required
+    //
+    CAT_FASTQ (
+        ch_fastq.multiple
+    )
+    .reads
+    .mix(ch_fastq.single)
+    .set { ch_cat_fastq }
+    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first().ifEmpty(null))
+
+
+    //
+    // MODULE: Run FastQC
+    //
+    FASTQC (
+        ch_cat_fastq
+        )
+    ch_versions             = ch_versions.mix(FASTQC.out.versions)
+
+    //
+    // MODULE: Adapter trimming with TRIMGALORE
+    //
+    TRIMGALORE ( 
+        ch_cat_fastq
+        )
+    ch_multiqc_files    = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{it[1]})
+    ch_multiqc_files    = ch_multiqc_files.mix(TRIMGALORE.out.html.collect{it[1]})
+    ch_multiqc_files    = ch_multiqc_files.mix(TRIMGALORE.out.zip.collect{it[1]})
+    ch_versions         = ch_versions.mix(TRIMGALORE.out.versions)
+    TRIMGALORE.out.reads.view()  
+    //
+    // MODULE: Run MULTIQC
+    //
+    MULTIQC ( 
+        ch_multiqc_files.collect()
+        )
+    ch_versions = ch_versions.mix( MULTIQC.out.versions )
+
+/*
     //
     // SUBWORKFLOW: PREPARE REFERENCE FILES (GENOME & MIRBASE)
     //
@@ -99,34 +150,7 @@ workflow MIRNASEQ {
         ch_genome_indices   = BOWTIE_BUILD_CUSTOM.out.index
         ch_versions         = ch_versions.mix( BOWTIE_BUILD_CUSTOM.out.versions ) 
     }
-
-    //
-    // MODULE: Run FastQC
-    //
-    FASTQC (
-        reads
-        )
-    ch_versions             = ch_versions.mix(FASTQC.out.versions)
-
-    //
-    // MODULE: Adapter trimming with TRIMGALORE
-    //
-    TRIMGALORE ( 
-        reads
-        )
-    ch_multiqc_files    = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{it[1]})
-    ch_multiqc_files    = ch_multiqc_files.mix(TRIMGALORE.out.html.collect{it[1]})
-    ch_multiqc_files    = ch_multiqc_files.mix(TRIMGALORE.out.zip.collect{it[1]})
-    ch_versions         = ch_versions.mix(TRIMGALORE.out.versions)
-    
-    //
-    // MODULE: Run MULTIQC
-    //
-    MULTIQC ( 
-        ch_multiqc_files.collect()
-        )
-    ch_versions = ch_versions.mix( MULTIQC.out.versions )
-  
+ 
     //
     // SUBWORKFLOW: MIRNASEQ ANALYSIS WITH MIRDEEP
     //
@@ -139,7 +163,7 @@ workflow MIRNASEQ {
         ch_mirbase_hairpin      // [path]
         )
     ch_versions = ch_versions.mix(MIRDEEP.out.versions)
-/* 
+ 
     //
     // MODULE: RECOVER PIPELINE MOST RELEVANT METRICS
     //
@@ -149,14 +173,16 @@ workflow MIRNASEQ {
         MIRDEEP.out.samples,
         MIRDEEP.out.mapper_stats
     )
-*/
+
     //
     // MODULE: Unify program versions
     //
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
         )
+*/        
 }
+
 /*
 ========================================================================================
     COMPLETION EMAIL AND SUMMARY

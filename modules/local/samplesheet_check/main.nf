@@ -1,5 +1,4 @@
 process SAMPLESHEET_CHECK {
-    label 'process_low'
     tag "$samplesheet"
 
     conda (params.enable_conda ? "conda-forge::python=3.8.3" : null)
@@ -14,7 +13,7 @@ process SAMPLESHEET_CHECK {
     path '*.csv'       , emit: csv
     path "versions.yml", emit: versions
 
-    script: // This script is bundled with the pipeline, in nf-core/spspng/bin/
+    script: // This script is bundled with the pipeline, in nf-core/mirnaseq/bin/
     """
     check_samplesheet.py \\
         $samplesheet \\
