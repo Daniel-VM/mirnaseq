@@ -126,7 +126,7 @@ workflow MIRNASEQ {
         ch_multiqc_files.collect()
         )
     ch_versions = ch_versions.mix( MULTIQC.out.versions )
-   
+  
     //
     // SUBWORKFLOW: MIRNASEQ ANALYSIS WITH MIRDEEP
     //
@@ -139,16 +139,17 @@ workflow MIRNASEQ {
         ch_mirbase_hairpin      // [path]
         )
     ch_versions = ch_versions.mix(MIRDEEP.out.versions)
-
+/* 
     //
-    // MODULE: Unify program versions
+    // MODULE: RECOVER PIPELINE MOST RELEVANT METRICS
     //
+        // TODO: Fix dependencies. Sompe python modules are missing despite being loaded with conda / singulairy
     STATS_SUMMARY(
         MULTIQC.out.data,
         MIRDEEP.out.samples,
         MIRDEEP.out.mapper_stats
     )
-
+*/
     //
     // MODULE: Unify program versions
     //
